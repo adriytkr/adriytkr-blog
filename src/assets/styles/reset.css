@@ -1,0 +1,21 @@
+*{
+  padding:0;
+  margin:0;
+  box-sizing:border-box;
+}
+
+body,
+input,
+button{
+  font-family:'Archivo',sans-serif;
+  font-size:16px;
+  cursor:pointer;
+}
+
+button{
+  cursor:pointer;
+}
+
+a{
+  text-decoration:none;
+}
