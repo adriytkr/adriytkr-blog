@@ -15,11 +15,4 @@ export type FunctionSeries={
   color?:string;
 };
 
-export type Range=[number,number,number];
-
-export type Graph={
-  points:PointSeries;
-  func:FunctionSeries;
-  domain:Range;
-  range:Range;
-};
+export type TheRange=[number,number,number];

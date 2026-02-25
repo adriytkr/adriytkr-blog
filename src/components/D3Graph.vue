@@ -1,14 +1,20 @@
 <script setup lang="ts">
-import type {Point,Graph} from '@/types/d3';
+import type {
+  Point,
+  PointSeries,
+  FunctionSeries,
+  TheRange,
+} from '@/types/d3';
 
 import * as d3 from 'd3';
-import {ref,onMounted,toRefs,toRef,watch} from 'vue';
+import {ref,onMounted,watch} from 'vue';
 
 const props=defineProps<{
-  graph:Graph;
+  points?:PointSeries;
+  func?:FunctionSeries;
+  domain:TheRange;
+  range:TheRange;
 }>();
-const state=toRefs(props);
-const graph=toRef(state.graph);
 
 const svgRef=ref<HTMLElement|null>(null);
 
@@ -34,28 +40,28 @@ function draw(width:number,height:number){
   // Add axes
   const xScale=d3
     .scaleLinear()
-    .domain(graph.value.domain)
+    .domain(props.domain)
     .range([margin.left,innerWidth+margin.right]);
   const yScale=d3
     .scaleLinear()
-    .domain(graph.value.range)
+    .domain(props.range)
     .range([innerHeight+margin.top,margin.top]);
 
   const xAxis=d3
     .axisBottom(xScale)
     .tickFormat(d3.format('d'))
-    .tickValues(d3.range(xScale.domain()[0]??0,(xScale.domain()[1]??10)+1,graph.value.domain[2]));
+    .tickValues(d3.range(xScale.domain()[0]??0,(xScale.domain()[1]??10)+1,props.domain[2]));
   const yAxis=d3
     .axisLeft(yScale)
     .tickFormat(d3.format('d'))
-    .tickValues(d3.range(yScale.domain()[0]??0,(yScale.domain()[1]??10)+1,graph.value.range[2]));
+    .tickValues(d3.range(yScale.domain()[0]??0,(yScale.domain()[1]??10)+1,props.range[2]));
 
   const xAxisPosition=
-    graph.value.range[0]<=0&&graph.value.range[1]>=0
+   props.range[0]<=0&&props.range[1]>=0
       ?yScale(0)
       :innerHeight+margin.top;
   const yAxisPosition=
-    graph.value.domain[0]<=0&&graph.value.domain[1]>=0
+    props.domain[0]<=0&&props.domain[1]>=0
       ?xScale(0)
       :margin.left;
   svg
@@ -72,12 +78,12 @@ function draw(width:number,height:number){
     .axisBottom(xScale)
     .tickSize(-innerHeight-margin.top)
     .tickFormat(()=>'')
-    .tickValues(d3.range(xScale.domain()[0]??0,(xScale.domain()[1]??10)+1,graph.value.domain[2]));
+    .tickValues(d3.range(xScale.domain()[0]??0,(xScale.domain()[1]??10)+1,props.domain[2]));
   const yGrid=d3
     .axisLeft(yScale)
     .tickSize(-innerWidth-margin.right)
     .tickFormat(()=>'')
-    .tickValues(d3.range(yScale.domain()[0]??0,(yScale.domain()[1]??10)+1,graph.value.range[2]));
+    .tickValues(d3.range(yScale.domain()[0]??0,(yScale.domain()[1]??10)+1,props.range[2]));
 
   svg
     .append('g')
@@ -91,26 +97,26 @@ function draw(width:number,height:number){
     .call(yGrid);
 
   // Draw points
-  if(graph.value.points){
+  if(props.points){
     svg
       .selectAll('circle')
-      .data(graph.value.points.data)
+      .data(props.points.data)
       .enter()
       .append('circle')
       .attr('cx',p=>xScale(p.x))
       .attr('cy',p=>yScale(p.y))
       .attr('r',6)
       .attr('stroke','none')
-      .attr('fill',graph.value.points.color);
+      .attr('fill',props.points.color);
   }
 
   // Draw function
-  if(graph.value.func){
-    const [xMin,xMax]=graph.value.func.domain;
-    const step=(xMax-xMin)/graph.value.func.samples;
-    const points:Point[]=Array.from({length:graph.value.func.samples+1},(_,i)=>{
+  if(props.func){
+    const [xMin,xMax]=props.func.domain;
+    const step=(xMax-xMin)/props.func.samples;
+    const points:Point[]=Array.from({length:props.func.samples+1},(_,i)=>{
       const x=xMin+i*step;
-      return {x,y:graph.value.func!.func(x)};
+      return {x,y:props.func!.func(x)};
     });
     const line=d3
       .line<Point>()
@@ -120,7 +126,7 @@ function draw(width:number,height:number){
       .append('path')
       .datum(points)
       .attr('fill','none')
-      .attr('stroke',graph.value.func.color??'black')
+      .attr('stroke',props.func.color??'black')
       .attr('stroke-width',3)
       .attr('d',line);
   }
@@ -138,7 +144,7 @@ onMounted(()=>{
   resizeObserver.observe(svgRef.value);
 });
 
-watch(props.graph,()=>{
+watch(props,()=>{
   if(!svgRef.value)return;
   const {clientWidth:width,clientHeight:height}=svgRef.value;
   draw(width,height);

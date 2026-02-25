@@ -1,17 +1,34 @@
+<script setup lang="ts">
+import type {Heading} from '@/types/nav';
+
+import TableOfContents from './TableOfContents.vue';
+
+defineProps<{
+  headings:Heading[];
+}>();
+</script>
+
 <template>
-  <article>
-    <slot></slot>
-  </article>
+  <div class="layout">
+    <article>
+      <slot></slot>
+    </article>
+    <TableOfContents :headings="headings"/>
+  </div>
 </template>
 
 <style scoped>
+.layout{
+  display:flex;
+}
 article{
-  max-width:1000px;
+  max-width:800px;
   padding:32px 16px;
   margin:0 auto;
 }
 article :slotted(section){
   margin:32px;
+  scroll-margin-top:24px;
 }
 article :slotted(h1),
 article :slotted(h2),
@@ -47,7 +64,7 @@ article :slotted(table) td{
   border:1px solid #000;
 }
 article :slotted([data-graph]){
-  max-width:750px;
+  max-width:500px;
   margin:16px auto;
 }
 article :slotted([data-split]){

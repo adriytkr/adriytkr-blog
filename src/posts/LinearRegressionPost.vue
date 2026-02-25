@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import type {Graph} from '@/types/d3';
+import type {
+  PointSeries,
+  FunctionSeries,
+  TheRange,
+} from '@/types/d3';
+import type {Heading} from '@/types/nav';
 
 import PostLayout from '@/components/PostLayout.vue';
 import MathDisplay from '@/components/MathDisplay.vue';
@@ -8,34 +13,48 @@ import D3Graph from '@/components/D3Graph.vue';
 
 import {ref} from 'vue';
 
-const graph=ref<Graph>({
-  func:{
-    func:(x:number)=>10*x,
-    samples:2,
-    domain:[100,500],
-  },
-  points:{
-    data:[
-      {x:100,y:1000},
-      {x:200,y:2000},
-      {x:300,y:3000},
-      {x:400,y:4000},
-      {x:500,y:5000},
-    ],
-    color:'#1f77b4',
-  },
-  domain:[100,500,50],
-  range:[1000,5000,1000],
+const headings:Heading[]=[
+  {title:'Introduction',id:'introduction'},
+  {title:'Problem',id:'problem'},
+  {title:'What criteria should we choose',id:'criteria'},
+  {title:'How to compute the best-fitting line',id:'compute'},
+  {title:'Infinitely many solutions',id:'infinitely-many-solutions'},
+  {title:'Why square and not take the power of 4?',id:'why-square'},
+  {title:'Linear regression and Linear Algebra',id:'linear-algebra'},
+];
+
+const func=ref<FunctionSeries>({
+  func:(x:number)=>10*x,
+  samples:2,
+  domain:[100,500],
 });
+
+const points=ref<PointSeries>({
+  data:[
+    {x:100,y:1000},
+    {x:200,y:2000},
+    {x:300,y:3000},
+    {x:400,y:4000},
+    {x:500,y:5000},
+  ],
+  color:'#1f77b4',
+});
+
+const domain=ref<TheRange>([100,500,50]);
+const range=ref<TheRange>([1000,5000,1000]);
 </script>
 
 <template>
-  <PostLayout>
+  <PostLayout :headings="headings">
     <h1>Linear Regression</h1>
-    <section>
+    <section id="introduction">
       <h2>Introduction</h2>
       <p>
-        Suppose you are given a table that relates the size and the price of a house.
+        In many scientific problems, we are given a collection of data points that states the relationship between
+        two variables.
+      </p>
+      <p>
+        For instance, suppose you are given the following dataset that relates the size and the price of a house.
       </p>
       <table>
         <tr>
@@ -54,7 +73,11 @@ const graph=ref<Graph>({
       <p>
         This describes a linear relationship: the price of a house is proportional to its size. We can graph this relationship.
       </p>
-      <D3Graph :graph="graph" />
+      <D3Graph
+        :points="points"
+        :domain="domain"
+        :range="range"
+      />
       <p>
         What if we have a house of a size not listed on the data. For instance, what would be the price of a house of size 150?
         We want to estimate its price in a way that it is coherent our data. We see our data is linear, so we expect the price to
@@ -68,17 +91,25 @@ const graph=ref<Graph>({
       <p>
         Since our relationship is linear, the best model is certainly a line that passes through all the points.
       </p>
-      <D3Graph :graph="graph" />
+      <D3Graph
+        :points="points"
+        :domain="domain"
+        :range="range"
+      />
       <p>
         Although the data for the price of a house of size 150 is not on the table, we can estimate it to be $1500.
       </p>
     </section>
-    <section>
+    <section id="problem">
       <h2>Problem</h2>
       <p>
         Usually data doesn't show up proportional as our previous example. The data usually looks "messy".
       </p>
-      <D3Graph :graph="graph" />
+      <D3Graph
+        :points="points"
+        :domain="domain"
+        :range="range"
+      />
       <p>
         There is no line capable of passing through all the points.
         Does that mean we are not able to predict values not analyzed?
@@ -105,8 +136,16 @@ const graph=ref<Graph>({
         Consider the following two lines.
       </p>
       <div data-split>
-        <D3Graph :graph="graph" />
-        <D3Graph :graph="graph" />
+        <D3Graph
+          :points="points"
+          :domain="domain"
+          :range="range"
+        />
+        <D3Graph
+          :points="points"
+          :domain="domain"
+          :range="range"
+        />
       </div>
       <p>
         The line from the first graph is much better than the line of the second graph. Although both attend what we state
@@ -124,8 +163,16 @@ const graph=ref<Graph>({
         Let's compare two more lines
       </p>
       <div data-split>
-        <D3Graph :graph="graph" />
-        <D3Graph :graph="graph" />
+        <D3Graph
+          :points="points"
+          :domain="domain"
+          :range="range"
+        />
+        <D3Graph
+          :points="points"
+          :domain="domain"
+          :range="range"
+        />
       </div>
       <p>
         Which line is the best and why?
@@ -135,7 +182,7 @@ const graph=ref<Graph>({
         the best one.
       </p>
     </section>
-    <section>
+    <section id="criteria">
       <h2>What criteria should we choose?</h2>
       <p>
         Imagine you are playing a bow and arrow game. It's a two-player game, you both need to hit the target in the center.
@@ -164,7 +211,7 @@ const graph=ref<Graph>({
         Deviation.
       </p>
     </section>
-    <section>
+    <section id="compute">
       <h2>How to compute the best-fitting line?</h2>
       <p>
         Now that we understand the general characteristic of a best-fitting line, we are going to learn how to compute them.
@@ -219,16 +266,16 @@ b&=\frac{\sum{y_i}-a\sum{x_i}}{n}\\
 \end{align*}
       "/>
     </section>
-    <section>
+    <section id="infinitely-many-solutions">
       <h2>Infinitely many solutions</h2>
       <p>
         It can happen that we have infinitely many lines in OLS. This occurs when the points have all the same x-values.
       </p>
     </section>
-    <section>
+    <section id="why-square">
       <h2>Why square and not take the power of 4?</h2>
     </section>
-    <section>
+    <section id="linear-algebra">
       <h2>Linear Regression is deeply connected to Least Squares</h2>
       <p>
         ...
