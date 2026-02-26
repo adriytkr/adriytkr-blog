@@ -27,7 +27,6 @@ onMounted(()=>{
     }
   );
 
-  console.log(sections);
   sections.forEach(section=>observer?.observe(section));
 });
 onBeforeUnmount(()=>{

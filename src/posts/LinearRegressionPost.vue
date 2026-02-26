@@ -1,47 +1,20 @@
 <script setup lang="ts">
-import type {
-  PointSeries,
-  FunctionSeries,
-  TheRange,
-} from '@/types/d3';
-import type {Heading} from '@/types/nav';
-
 import PostLayout from '@/components/PostLayout.vue';
 import MathDisplay from '@/components/MathDisplay.vue';
 import MathInline from '@/components/MathInline.vue';
-import D3Graph from '@/components/D3Graph.vue';
+import GraphCanvas from '@/components/GraphCanvas.vue';
+import WarningBox from '@/components/WarningBox.vue';
+import VariableInput from '@/components/VariableInput.vue';
 
-import {ref} from 'vue';
+import useLinearRegressionPost from '@/composables/useLinearRegressionPost';
 
-const headings:Heading[]=[
-  {title:'Introduction',id:'introduction'},
-  {title:'Problem',id:'problem'},
-  {title:'What criteria should we choose',id:'criteria'},
-  {title:'How to compute the best-fitting line',id:'compute'},
-  {title:'Infinitely many solutions',id:'infinitely-many-solutions'},
-  {title:'Why square and not take the power of 4?',id:'why-square'},
-  {title:'Linear regression and Linear Algebra',id:'linear-algebra'},
-];
-
-const func=ref<FunctionSeries>({
-  func:(x:number)=>10*x,
-  samples:2,
-  domain:[100,500],
-});
-
-const points=ref<PointSeries>({
-  data:[
-    {x:100,y:1000},
-    {x:200,y:2000},
-    {x:300,y:3000},
-    {x:400,y:4000},
-    {x:500,y:5000},
-  ],
-  color:'#1f77b4',
-});
-
-const domain=ref<TheRange>([100,500,50]);
-const range=ref<TheRange>([1000,5000,1000]);
+const {
+  headings,
+  normalPoints,
+  messyPoints,
+  a,
+  b,
+}=useLinearRegressionPost();
 </script>
 
 <template>
@@ -50,150 +23,249 @@ const range=ref<TheRange>([1000,5000,1000]);
     <section id="introduction">
       <h2>Introduction</h2>
       <p>
-        In many scientific problems, we are given a collection of data points that states the relationship between
-        two variables.
+        In many scientific and engineering problems, we are given a collection of data points that describes a relationship
+        between two quantities.
       </p>
       <p>
-        For instance, suppose you are given the following dataset that relates the size and the price of a house.
+        For instance, consider the following dataset collected in a research.
+        It relates the size and the price of a house.
       </p>
       <table>
         <tr>
-          <td>Size</td>
-          <td>100</td>
-          <td>200</td>
-          <td>300</td>
+          <td>Size(m<sup>2</sup>)</td>
+          <td v-for="point in normalPoints">
+            {{ point.x }}
+          </td>
         </tr>
         <tr>
-          <td>Price</td>
-          <td>$1000</td>
-          <td>$2000</td>
-          <td>$3000</td>
+          <td>Price($)</td>
+          <td v-for="point in normalPoints">
+            {{ point.y }}
+          </td>
         </tr>
       </table>
       <p>
-        This describes a linear relationship: the price of a house is proportional to its size. We can graph this relationship.
+        This happens to describe a linear relationship: the price of a house is proportional to its size.
+        We can graph this relationship.
       </p>
-      <D3Graph
-        :points="points"
-        :domain="domain"
-        :range="range"
+      <GraphCanvas
+        :points-wrappers="[
+          {
+            points:normalPoints,
+            color:'black',
+          }
+        ]"
+        :draggable="false"
+        :domain="[100,500]"
+        :range="[1000,5000]"
       />
       <p>
-        What if we have a house of a size not listed on the data. For instance, what would be the price of a house of size 150?
-        We want to estimate its price in a way that it is coherent our data. We see our data is linear, so we expect the price to
-        increase as we the size increases.
+        Now it raises a question. What if we have a house of a size not listed on the data. For instance, what would be the
+        price of a house of size 600? We want to estimate its price in a way that it is coherent with our data.
       </p>
       <p>
-        What we need is a model that describes our data and provides good estimations for data unknown to us, like the price
-        of a house of size 150 or 320, after all, we can't collect info for every possible size of house. That is the topic
-        we will be exploring in this article - <strong>Linear Regression</strong>
+        Although this data point doesn't show up on the collected data, we can still estimate its price by looking
+        at the tendency of the graph.
       </p>
       <p>
-        Since our relationship is linear, the best model is certainly a line that passes through all the points.
+        The relationship is perfectly linear, so we expect the prices to rise as the size increases. For every 100m<sup>2</sup>
+        the price increaess by $1000. Therefore, we can estimate the price of a house of size 600m<sup>2</sup> to be $6000
       </p>
-      <D3Graph
-        :points="points"
-        :domain="domain"
-        :range="range"
+      <GraphCanvas
+        :points-wrappers="[
+          {
+            points:[...normalPoints,{x:600,y:6000}],
+            color:'#1f77b4',
+          }
+        ]"
+        :draggable="false"
+        :domain="[100,600]"
+        :range="[1000,6000]"
       />
       <p>
-        Although the data for the price of a house of size 150 is not on the table, we can estimate it to be $1500.
+        It seems to be a pretty reasonable price.
       </p>
+      <p>
+        That is the core idea of <strong>Linear Regression</strong>. We don't have all the points, but we can still
+        predict its value by looking at a pattern of the current data we have.
+      </p>
+      <p>
+        In general, we need a model that describes any data point that hasn't been collected.
+        In our particular case, since our relationship is perfectly linear, our model is a linear function that
+        maps a size onto a price. Therefore, we need a line that passes through all the points.
+      </p>
+      <GraphCanvas
+        :points-wrappers="[
+          {
+            points:normalPoints,
+            color:'black',
+          }
+        ]"
+        :draggable="false"
+        :domain="[100,500]"
+        :range="[1000,5000]"
+      />
     </section>
     <section id="problem">
       <h2>Problem</h2>
       <p>
-        Usually data doesn't show up proportional as our previous example. The data usually looks "messy".
+        In real-life cases, the data usually doesn't show up as predictable as the previous example.
+        The data usually looks "messy"; it doesn't show any apparent pattern and appears to be random.
       </p>
-      <D3Graph
-        :points="points"
-        :domain="domain"
-        :range="range"
+      <p>
+        Let's take the same context as the previous example but be a little bit more realistic.
+      </p>
+      <table>
+        <tr>
+          <td>Size(m<sup>2</sup>)</td>
+          <td v-for="point in messyPoints">
+            {{ point.x }}
+          </td>
+        </tr>
+        <tr>
+          <td>Price($)</td>
+          <td v-for="point in messyPoints">
+            {{ point.y }}
+          </td>
+        </tr>
+      </table>
+      <GraphCanvas
+        :points-wrappers="[
+          {
+            points:normalPoints,
+            color:'black',
+          }
+        ]"
+        :draggable="false"
+        :domain="[100,500]"
+        :range="[1000,5000]"
       />
       <p>
-        There is no line capable of passing through all the points.
-        Does that mean we are not able to predict values not analyzed?
+        The relationship between size and price is not linear. It is impossible to find a line which is
+        able to go through all the points. Try it!
       </p>
-      <p>
-        Let's view our problem more carefully. If you were to give a fair price to a house of size 150, what would it be?
-      </p>
-      <p>
-        If you happen to guess a value between $1000 and $1600, you are right. Why? We expect the value to increases as we go from left to right (the size increases), since the price of a house of size 100 is $1000, we expect the price of a house of size 150 to be higher. Similarly for a house of size 200, we expect the price to be lower than $1600.
-      </p>
-      <p>
-        That makes us think that although the estimation is not straightforward as the previous example when the points were collinear and the relationship was linear, there is some rule ruling our data, we just don't know it precisely.
-      </p>
-      <p>
-        One super important thing to state: What we are doing are estimations, it is possible for a house of size 150 to have a
-        lower price than a house of size 100, what we are trying to do is trying to find a pattern for our data and with that
-        estimate prices of any house. It can happen, but the points on the graph point out that the prices tend to increase as the 
-        house gets bigger.
-      </p>
-      <p>
-        We can apply this logic to all sizes between 100 and 200 and conclude that any line that follow our conclusion is good, or is it?
-      </p>
-      <p>
-        Consider the following two lines.
-      </p>
-      <div data-split>
-        <D3Graph
-          :points="points"
-          :domain="domain"
-          :range="range"
+      <GraphCanvas
+        :points-wrappers="[
+          {
+            points:normalPoints,
+            color:'black',
+          }
+        ]"
+        :draggable="false"
+        :domain="[100,500]"
+        :range="[1000,5000]"
+      />
+      <div class="input">
+        <VariableInput
+          label="a"
+          v-model="a"
+          :min="0"
+          :max="100"
         />
-        <D3Graph
-          :points="points"
-          :domain="domain"
-          :range="range"
+        <VariableInput
+          label="b"
+          v-model="b"
+          :min="0"
+          :max="1000"
         />
       </div>
       <p>
-        The line from the first graph is much better than the line of the second graph. Although both attend what we state
-        reviously about the prices between 100 and 200, for values large than that, the line from the second graph doesn't follow
-        the implicit increasing rule. We need to look globally.
+        How can we tackle this nonlinearity problem?
+        Let's view our problem more carefully.
       </p>
       <p>
-        The second graph take into account only the values between 100 and 200, whereas the first graph does that and also take into
-        account the remaining points.
+        If you were to give a fair price to a house of size 150, what would it be?
       </p>
       <p>
-        We can conclude there are certain lines that are certainly better than others and thus far we are judging them intuitively
+        If you happen to guess a value between $1000 and $1500, you are right. Why? We expect the value to increases
+        as the size increase.
       </p>
       <p>
-        Let's compare two more lines
+        Since the price of a house of size 100 is $1000, we expect the price of a house of size 150 to be higher.
+      </p>
+      <p>
+        Since the price of a house of size 200 is $1500, we expect the price to be lower than $1500.
+      </p>
+      <p>
+        Although the estimation is not straightforward as the previous example when the points were collinear and
+        the relationship was linear, it makes us think that there is some rule ruling our data,
+        we just don't know it precisely.
+      </p>
+      <WarningBox>
+        <p>
+          One super important thing to state: What we are doing are estimations.
+        </p>
+        <p>
+          It is possible for a house of size 150 to have a lower price than a house of size 100. What we are trying to
+          do is finding a pattern for our data and with that estimate prices of any house.
+        </p>
+      </WarningBox>
+      <p>
+        We are able to estimate values using our intuition by looking at the general tendency of the data.
+      </p>
+      <p>
+        Now rises another problem. Consider two models for the same data.
       </p>
       <div data-split>
-        <D3Graph
-          :points="points"
-          :domain="domain"
-          :range="range"
+        <GraphCanvas
+          :points-wrappers="[
+            {
+              points:normalPoints,
+              color:'black',
+            }
+          ]"
+          :draggable="false"
+          :domain="[100,500]"
+          :range="[1000,5000]"
         />
-        <D3Graph
-          :points="points"
-          :domain="domain"
-          :range="range"
+        <GraphCanvas
+          :points-wrappers="[
+            {
+              points:normalPoints,
+              color:'black',
+            }
+          ]"
+          :draggable="false"
+          :domain="[100,500]"
+          :range="[1000,5000]"
         />
       </div>
       <p>
-        Which line is the best and why?
+        Which model better describes the data and why?
       </p>
       <p>
-        It's hard to tell. That leads us to define what criteria we should use to compare lines and find
-        the best one.
+        It's hard to tell. Thus far we were able to assess the quality of a model using our intuition, and when asked to
+        compare models, the models were very different. However, we know that intuition and images can be misleading.
+      </p>
+      <p>
+        When two models are very similar, it becomes hard to distinguish which one is superior.
+        That leads us to define a criterion to help us compare models and define what is the best line.
       </p>
     </section>
     <section id="criteria">
-      <h2>What criteria should we choose?</h2>
+      <h2>What criterion should we choose?</h2>
       <p>
-        Imagine you are playing a bow and arrow game. It's a two-player game, you both need to hit the target in the center.
-        Both of you shoot, but miss the center, how can you decide which one won? Well, the one closest to the center won, right?
-        Mathematically speaking, the one with the smallest distance from the center, won.
+        For very similar lines, how can we be sure a model is superior to the other? To help us define a systematic way, consider
+        the following analogy.
       </p>
       <p>
-        We can apply this logic to our model. The best line is the one that minimizes a distance. For each data point, we can
-        subtract its value from the value predicted by the line. Sum them all up, and the one that gives the smallest value is
-        considered the best.
+        Imagine you are playing a bow-and-arrow game. It's a two-player game. You and your opponent need to hit the
+        center of a target.
       </p>
+      <p>
+        Both of you take a shot, but miss the center. How can you determine the winner? Naturally, we define the winner as
+        the player whose arrow lands closest to the center. In other words, the player whose arrow has the smallest distance
+        from the center is the winner.
+      </p>
+      <p>
+        We can apply this same logic to our problem of determining which lines is better. The best line is the one that
+        minimizes some measurement. What could be this measurement we are trying to minimize?
+      </p>
+      <p>
+        Naturally, for each data point, we can subtract its value from the value predicted by the line. Then we sum up
+        the differences, and the model which gives the smallest value is the best.
+      </p>
+      <!-- graph -->
       <p>
         The problem with this approach is that the error sum might be negative and there are infinitely many value.
       </p> 
