@@ -2,21 +2,24 @@
 import type {
   FunctionWrapper,
   Point,
-  PointsWrapper,
   TheRange,
   TheScale,
 } from '@/types/d3';
 
 import * as d3 from 'd3';
 
-import {ref,onMounted,onBeforeUnmount} from 'vue';
+import {ref,onMounted,onBeforeUnmount,watch} from 'vue';
+
+import useDarkMode from '@/composables/useDarkMode';
+
+const {isDarkMode}=useDarkMode();
 
 interface Props{
-  pointsWrappers?:PointsWrapper[];
+  pointsWrappers?:Point[][];
   functionWrappers?:FunctionWrapper[];
   domain:TheRange;
   range:TheRange;
-  draggable:boolean;
+  draggable?:boolean;
 }
 
 const props=withDefaults(
@@ -39,6 +42,14 @@ let width:number;
 let height:number;
 let xScaleOriginal:TheScale;
 let yScaleOriginal:TheScale;
+
+function getTheme(){
+  const styles=getComputedStyle(document.documentElement)
+  return{
+    bgColor:styles.getPropertyValue('--background-color').trim(),
+    textColor:styles.getPropertyValue('--text-color').trim(),
+  };
+}
 
 function init(){
   if(!containerRef.value)return;
@@ -218,6 +229,7 @@ function drawAxes(xS:TheScale,yS:TheScale){
 }
 
 function drawFunctions(xS:TheScale,yS:TheScale){
+  const theme=getTheme();
   props.functionWrappers?.forEach(wrapper=>{
     // Generate points
     const [minX,maxX]=wrapper.domain;
@@ -237,28 +249,52 @@ function drawFunctions(xS:TheScale,yS:TheScale){
       .append('path')
       .datum(points)
       .attr('fill','none')
-      .attr('stroke',wrapper.color??'black')
+      .attr('stroke',theme.textColor)
       .attr('stroke-width',2)
       .attr('d',line);
   });
 }
 
 function drawPoints(xS:TheScale,yS:TheScale){
-  props.pointsWrappers?.forEach(wrapper=>{
+  const theme=getTheme();
+  props.pointsWrappers?.forEach(points=>{
     pointsGroup.
       selectAll('.point')
-      .data(wrapper.points)
+      .data(points)
       .enter()
       .append('circle')
       .attr('cx',p=>xS(p.x))
       .attr('cy',p=>yS(p.y))
       .attr('r',5)
-      .attr('fill',wrapper.color);
+      .attr('fill',theme.textColor);
   });
 }
 
 onMounted(init);
 onBeforeUnmount(()=>{});
+
+watch(
+  ()=>props.functionWrappers,
+  ()=>{
+    clearScreen();
+    draw(xScaleOriginal,yScaleOriginal);
+  },
+  {deep:true},
+);
+
+function updateThemeOnly(){
+  const theme=getTheme()
+
+  pointsGroup
+    .selectAll('circle')
+    .attr('fill',theme.textColor)
+
+  functionsGroup
+    .selectAll('path')
+    .attr('stroke',theme.textColor)
+}
+
+watch(isDarkMode,updateThemeOnly);
 </script>
 
 <template>

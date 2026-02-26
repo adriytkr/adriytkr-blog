@@ -5,6 +5,7 @@ import MathInline from '@/components/MathInline.vue';
 import GraphCanvas from '@/components/GraphCanvas.vue';
 import WarningBox from '@/components/WarningBox.vue';
 import VariableInput from '@/components/VariableInput.vue';
+import DatasetTable from '@/components/DatasetTable.vue';
 
 import useLinearRegressionPost from '@/composables/useLinearRegressionPost';
 
@@ -23,38 +24,16 @@ const {
     <section id="introduction">
       <h2>Introduction</h2>
       <p>
-        In many scientific and engineering problems, we are given a collection of data points that describes a relationship
-        between two quantities.
+        Consider the following dataset collected in a research. It relates the size and the price of a house.
       </p>
-      <p>
-        For instance, consider the following dataset collected in a research.
-        It relates the size and the price of a house.
-      </p>
-      <table>
-        <tr>
-          <td>Size(m<sup>2</sup>)</td>
-          <td v-for="point in normalPoints">
-            {{ point.x }}
-          </td>
-        </tr>
-        <tr>
-          <td>Price($)</td>
-          <td v-for="point in normalPoints">
-            {{ point.y }}
-          </td>
-        </tr>
-      </table>
+      <DatasetTable data-table :dataset="normalPoints"/>
       <p>
         This happens to describe a linear relationship: the price of a house is proportional to its size.
         We can graph this relationship.
       </p>
       <GraphCanvas
-        :points-wrappers="[
-          {
-            points:normalPoints,
-            color:'black',
-          }
-        ]"
+        data-graph
+        :points-wrappers="[normalPoints]"
         :draggable="false"
         :domain="[100,500]"
         :range="[1000,5000]"
@@ -72,12 +51,8 @@ const {
         the price increaess by $1000. Therefore, we can estimate the price of a house of size 600m<sup>2</sup> to be $6000
       </p>
       <GraphCanvas
-        :points-wrappers="[
-          {
-            points:[...normalPoints,{x:600,y:6000}],
-            color:'#1f77b4',
-          }
-        ]"
+        data-graph
+        :points-wrappers="[normalPoints.concat({x:600,y:6000})]"
         :draggable="false"
         :domain="[100,600]"
         :range="[1000,6000]"
@@ -95,17 +70,14 @@ const {
         maps a size onto a price. Therefore, we need a line that passes through all the points.
       </p>
       <GraphCanvas
-        :points-wrappers="[
-          {
-            points:normalPoints,
-            color:'black',
-          }
-        ]"
+        data-graph
+        :points-wrappers="[normalPoints]"
         :draggable="false"
         :domain="[100,500]"
         :range="[1000,5000]"
       />
     </section>
+    <hr>
     <section id="problem">
       <h2>Problem</h2>
       <p>
@@ -115,27 +87,10 @@ const {
       <p>
         Let's take the same context as the previous example but be a little bit more realistic.
       </p>
-      <table>
-        <tr>
-          <td>Size(m<sup>2</sup>)</td>
-          <td v-for="point in messyPoints">
-            {{ point.x }}
-          </td>
-        </tr>
-        <tr>
-          <td>Price($)</td>
-          <td v-for="point in messyPoints">
-            {{ point.y }}
-          </td>
-        </tr>
-      </table>
+      <DatasetTable data-table :dataset="messyPoints"/>
       <GraphCanvas
-        :points-wrappers="[
-          {
-            points:normalPoints,
-            color:'black',
-          }
-        ]"
+        data-graph
+        :points-wrappers="[normalPoints]"
         :draggable="false"
         :domain="[100,500]"
         :range="[1000,5000]"
@@ -145,13 +100,15 @@ const {
         able to go through all the points. Try it!
       </p>
       <GraphCanvas
-        :points-wrappers="[
+        data-graph
+        :function-wrappers="[
           {
-            points:normalPoints,
-            color:'black',
+            func:x=>a*x+b,
+            domain:[100,500],
+            samples:100,
           }
         ]"
-        :draggable="false"
+        :points-wrappers="[normalPoints]"
         :domain="[100,500]"
         :range="[1000,5000]"
       />
@@ -208,23 +165,15 @@ const {
       </p>
       <div data-split>
         <GraphCanvas
-          :points-wrappers="[
-            {
-              points:normalPoints,
-              color:'black',
-            }
-          ]"
+          data-graph
+          :points-wrappers="[normalPoints]"
           :draggable="false"
           :domain="[100,500]"
           :range="[1000,5000]"
         />
         <GraphCanvas
-          :points-wrappers="[
-            {
-              points:normalPoints,
-              color:'black',
-            }
-          ]"
+          data-graph
+          :points-wrappers="[normalPoints]"
           :draggable="false"
           :domain="[100,500]"
           :range="[1000,5000]"
@@ -242,6 +191,7 @@ const {
         That leads us to define a criterion to help us compare models and define what is the best line.
       </p>
     </section>
+    <hr>
     <section id="criteria">
       <h2>What criterion should we choose?</h2>
       <p>
@@ -283,6 +233,7 @@ const {
         Deviation.
       </p>
     </section>
+    <hr>
     <section id="compute">
       <h2>How to compute the best-fitting line?</h2>
       <p>
@@ -338,15 +289,18 @@ b&=\frac{\sum{y_i}-a\sum{x_i}}{n}\\
 \end{align*}
       "/>
     </section>
+    <hr>
     <section id="infinitely-many-solutions">
       <h2>Infinitely many solutions</h2>
       <p>
         It can happen that we have infinitely many lines in OLS. This occurs when the points have all the same x-values.
       </p>
     </section>
+    <hr>
     <section id="why-square">
       <h2>Why square and not take the power of 4?</h2>
     </section>
+    <hr>
     <section id="linear-algebra">
       <h2>Linear Regression is deeply connected to Least Squares</h2>
       <p>

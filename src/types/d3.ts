@@ -5,16 +5,10 @@ export type Point={
   y:number;
 };
 
-export type PointsWrapper={
-  points:Point[];
-  color:string;
-};
-
 export type FunctionWrapper={
   func:(x:number)=>number;
   samples:number;
   domain:[number,number];
-  color?:string;
 };
 
 export type TheRange=[number,number];

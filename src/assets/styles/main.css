@@ -5,7 +5,8 @@
 }
 
 body{
-  /* background-color:#fafafa; */
+  background-color:var(--background-color);
+  color:var(--text-color);
 }
 
 body,
@@ -13,7 +14,7 @@ input,
 button,
 table td,
 table th{
-  font-family:'Archivo',sans-serif;
+  font-family:'Inter',sans-serif;
   font-size:16px;
 }
 

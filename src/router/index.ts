@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import HomeView from '@/views/HomeView.vue';
+import AboutView from '@/views/AboutView.vue';
+import ArticlesView from '@/views/ArticlesView.vue';
 
 import LinearRegressionPost from '@/posts/LinearRegressionPost.vue';
 
@@ -8,20 +9,29 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      name:'home',
       path:'/',
-      component:HomeView,
+      redirect:'about',
     },
     {
-      path:'/posts',
+      name:'about',
+      path:'/about',
+      component:AboutView,
+    },
+    {
+      path:'/articles',
       children:[
+        {
+          name:'articles',
+          path:'',
+          component:ArticlesView,
+        },
         {
           name:'linear regression',
           path:'linear-regression',
           component:LinearRegressionPost,
         },
       ],
-    }
+    },
   ],
 });
 
