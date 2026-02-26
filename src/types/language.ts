@@ -1,5 +1,5 @@
-export type Language='en'|'pt';
-export type LanguageWrapper={
-  label:string;
-  language:Language;
+export type LanguageCode='en'|'pt';
+export type Language={
+  name:string;
+  code:LanguageCode;
 };

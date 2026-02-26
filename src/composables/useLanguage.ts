@@ -1,40 +1,44 @@
-import type {LanguageWrapper} from '@/types/language';
+import type {LanguageCode,Language} from '@/types/language';
 
 import {computed,ref} from 'vue';
-import {useRoute} from 'vue-router';
+import {useRoute,type RouteLocationRaw} from 'vue-router';
+import {useI18n} from 'vue-i18n';
 
 export default function(){
   const isLanguageSelectionOpen=ref(false);
-
   const toggleLanguageSelection=()=>
     isLanguageSelectionOpen.value=!isLanguageSelectionOpen.value;
 
-  const DEFAULT_LANGUAGE:LanguageWrapper={
-    label:'English',
-    language:'en'
+  const DEFAULT_LANGUAGE:Language={
+    name:'English',
+    code:'en'
   };
 
-  const languages:LanguageWrapper[]=[
+  const languages:Language[]=[
     DEFAULT_LANGUAGE,
-    {label:'Português',language:'pt'},
+    {name:'Português',code:'pt'},
   ];
 
-  const route=useRoute();
-
-  const selectedLanguage=computed<LanguageWrapper>(()=>
-    languages.find((l)=>l.language===route.query.lang)??DEFAULT_LANGUAGE
+  const {locale}=useI18n();
+  const selectedLanguage=computed<Language>(()=>
+    languages.find(lang=>lang.code===locale.value)||DEFAULT_LANGUAGE
   );
 
-  // fix later
-  // const updateLanguage=(lang:string)=>{
-  //   const root=document.documentElement;
-  //   root.lang=lang;
-  // };
+  const route=useRoute();
+  const changeLanguage=(language:LanguageCode):RouteLocationRaw=>{
+    return{
+      params:{
+        ...route.params,
+        lang:language,
+      },
+    };
+  };
 
   return{
-    languages,
-    selectedLanguage,
     isLanguageSelectionOpen,
     toggleLanguageSelection,
+    languages,
+    selectedLanguage,
+    changeLanguage,
   };
 }

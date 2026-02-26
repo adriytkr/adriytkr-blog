@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import {i18n} from '@/i18n/';
 
 import AboutView from '@/views/AboutView.vue';
 import ArticlesView from '@/views/ArticlesView.vue';
@@ -10,29 +11,51 @@ const router = createRouter({
   routes: [
     {
       path:'/',
-      redirect:'about',
+      redirect:{
+        path:'/en/about',
+      },
     },
     {
-      name:'about',
-      path:'/about',
-      component:AboutView,
-    },
-    {
-      path:'/articles',
+      path:'/:lang(en|pt)',
       children:[
         {
-          name:'articles',
-          path:'',
-          component:ArticlesView,
+          name:'about',
+          path:'about',
+          component:AboutView,
         },
         {
-          name:'linear regression',
-          path:'linear-regression',
-          component:LinearRegressionPost,
+          path:'articles',
+          children:[
+            {
+              name:'articles',
+              path:'',
+              component:ArticlesView,
+            },
+            {
+              name:'linear regression',
+              path:'linear-regression',
+              component:LinearRegressionPost,
+            },
+          ],
         },
       ],
-    },
+    }
   ],
+});
+
+router.beforeEach((to,from)=>{
+  const lang=to.params.lang as string;
+
+  if(lang!=='en'&&lang!=='pt')
+    return {path:'/en/about'};
+
+  i18n.global.locale=lang;
+});
+
+router.afterEach((to,from)=>{
+  const lang=to.params.lang as string;
+
+  document.documentElement.lang=lang;
 });
 
 export default router;

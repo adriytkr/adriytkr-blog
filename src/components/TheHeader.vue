@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import LanguageSelection from './LanguageSelection.vue';
 import ToggleDarkMode from './ToggleDarkMode.vue';
+
+import {useI18n} from 'vue-i18n';
+
+const {t} = useI18n();
 </script>
 
 <template>
   <header>
     <nav>
       <ul>
-        <li><RouterLink to="/about">About</RouterLink></li>
-        <li><RouterLink to="/articles">Articles</RouterLink></li>
+        <li><RouterLink to="/about">{{ t('nav.about') }}</RouterLink></li>
+        <li><RouterLink to="/articles">{{ t('nav.articles') }}</RouterLink></li>
       </ul>
     </nav>
     <div class="settings">

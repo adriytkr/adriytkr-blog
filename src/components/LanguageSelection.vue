@@ -2,10 +2,11 @@
 import useLanguage from '@/composables/useLanguage';
 
 const {
+  isLanguageSelectionOpen,
+  toggleLanguageSelection,
   languages,
   selectedLanguage,
-  isLanguageSelectionOpen,
-  toggleLanguageSelection
+  changeLanguage,
 }=useLanguage();
 </script>
 
@@ -22,11 +23,11 @@ const {
       <ul class="languages" v-if="isLanguageSelectionOpen">
         <li
           v-for="language in languages"
-          :key="language.language"
-          :class="{'active':language.language===selectedLanguage.language}"
+          :key="language.code"
+          :class="{'active':language.code===selectedLanguage.code}"
         >
-          <RouterLink :to="{query:{lang:language.language}}">
-            {{ language.label }}
+          <RouterLink :to="changeLanguage(language.code)">
+            {{ language.name }}
           </RouterLink>
         </li>
       </ul>
