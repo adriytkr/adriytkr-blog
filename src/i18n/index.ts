@@ -1,9 +1,11 @@
-import {createI18n} from 'vue-i18n';
+import type {LanguageCode} from '@/shared/types/language';
+
+import {createI18n, type VueMessageType} from 'vue-i18n';
 
 import enCommon from './locales/en/common.json';
 import ptCommon from './locales/pt/common.json';
 
-const messages={
+const messages:Record<LanguageCode,Record<string,any>>={
   en:{
     ...enCommon,
   },
@@ -12,8 +14,8 @@ const messages={
   },
 };
 
-export const i18n=createI18n({
-  locale:'pt',
+export const i18n=createI18n<{[key:string]:string},LanguageCode>({
+  locale:'en',
   fallbackLocale:'en',
   messages,
 });

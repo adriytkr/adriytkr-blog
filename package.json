@@ -11,8 +11,10 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
+    "@vueuse/core": "^14.2.1",
     "d3": "^7.9.0",
     "katex": "^0.16.33",
+    "pinia": "^3.0.4",
     "vue": "^3.5.28",
     "vue-i18n": "^11.2.8",
     "vue-router": "^5.0.2"
