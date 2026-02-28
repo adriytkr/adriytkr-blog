@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const isDark=useDark({
-  storageKey:DARK_STORAGE_KEY,
+  storageKey:THEME_STORAGE_KEY,
   valueDark:'dark',
   valueLight:'light',
   initialValue:'auto',

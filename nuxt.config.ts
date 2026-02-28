@@ -1,3 +1,5 @@
+import {getLocaleFiles} from './shared/utils/locale';
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -6,6 +8,7 @@ export default defineNuxtConfig({
   imports:{
     dirs:[
       '~/shared/types',
+      '~/shared/utils',
       '~/shared/constants',
     ],
   },
@@ -14,14 +17,19 @@ export default defineNuxtConfig({
     '~/assets/styles/theme.css',
     '~/assets/styles/main.css',
   ],
-  routeRules:{
-    // '/articles':{appLayout:'article'},
-  },
   i18n:{
     defaultLocale:'en',
     locales:[
-      {code:'en',name:'English',file:'en.json'},
-      {code:'pt',name:'Portuguese',file:'pt.json'},
+      {
+        code:'en',
+        name:'English',
+        files:getLocaleFiles('en'),
+      },
+      {
+        code:'pt',
+        name:'Portuguese',
+        files:getLocaleFiles('pt'),
+      },
     ],
   },
-})
+});

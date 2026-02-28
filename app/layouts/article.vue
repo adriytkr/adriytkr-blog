@@ -1,20 +1,17 @@
 <script setup lang="ts">
-// defineProps<{
-//   headings:Section[];
-//   title:string;
-//   slug:string;
-//   tags:string[];
-// }>();
-
 const route=useRoute();
 const {
-  title='unknown',
   slug='unknown',
   tags=[],
-  headings=[]
-}=route.meta;
+}=route.meta as {
+  slug:string;
+  tags:string[];
+};
 
 const {progress,articleRef}=useArticle();
+
+const {t}=useI18n();
+const at=(key:string)=>t(`articles.${slug}.${key}`);
 </script>
 
 <template>
@@ -25,9 +22,9 @@ const {progress,articleRef}=useArticle();
     </div>
     <main class="article-main">
       <article class="article" ref="articleRef">
-        <h1 class="article-title">{{ title }}</h1>
-        <ArticleTags :slug="slug" :tags="tags"/>
-        <ArticleTableOfContents :headings="headings"/>
+        <h1 class="article-title">{{ at('title') }}</h1>
+        <ArticleTags :slug="slug" :tagsSlugs="tags"/>
+        <ArticleTableOfContents :sections="[]"/>
         <slot></slot>
       </article>
     </main>

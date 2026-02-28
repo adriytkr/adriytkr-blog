@@ -10,12 +10,12 @@ const {t}=useI18n();
   <li class="article">
     <NuxtLinkLocale class="article-link" :to="`/articles/${article.slug}`">
       <h2 class="article-title">
-        {{ t(`articles.articles.${article.slug}.title`) }}
+        {{ t(`articles-page.articles.${article.slug}.title`) }}
       </h2>
       <p class="article-description">
-        {{ t(`articles.articles.${article.slug}.description`) }}
+        {{ t(`articles-page.articles.${article.slug}.description`) }}
       </p>
-      <ArticleTags :slug="article.slug" :tags="article.tags"/>
+      <ArticleTags :tags-slugs="article.tagSlugs"/>
     </NuxtLinkLocale>
   </li>
 </template>

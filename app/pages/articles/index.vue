@@ -3,9 +3,9 @@ const {t}=useI18n();
 </script>
 
 <template>
-  <h1 class="articles-title">{{ t('articles.title') }}</h1>
-  <p class="articles-description">{{ t('articles.description1') }}</p>
-  <p class="articles-description">{{ t('articles.description2') }}</p>
+  <h1 class="articles-title">{{ t('articles-page.title') }}</h1>
+  <p class="articles-description">{{ t('articles-page.description1') }}</p>
+  <p class="articles-description">{{ t('articles-page.description2') }}</p>
   <ul class="articles-list">
     <ArticleItem
       v-for="article in articles"

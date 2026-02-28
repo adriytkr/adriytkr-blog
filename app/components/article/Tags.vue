@@ -1,7 +1,6 @@
 <script setup lang="ts">
 defineProps<{
-  slug:string;
-  tags:string[];
+  tagsSlugs:string[];
 }>();
 
 const {t}=useI18n();
@@ -9,8 +8,8 @@ const {t}=useI18n();
 
 <template>
   <ul class="article-tags">
-    <li class="article-tag" v-for="tag in tags">
-      {{ t(`articles.articles.${slug}.tags.${tag}`) }}
+    <li class="article-tag" v-for="tagSlug in tagsSlugs">
+      {{ t(`tags.${tagSlug}`) }}
     </li>
   </ul>
 </template>

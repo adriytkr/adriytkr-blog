@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props=defineProps<{
-  headings:Section[];
+  sections:string[];
 }>();
 </script>
 
@@ -10,10 +10,10 @@ const props=defineProps<{
     <ul class="toc-list">
       <li
         class="toc-list-item"
-        v-for="heading in headings"
-        :key="heading.id"
+        v-for="section in sections"
+        :key="section"
       >
-        <a :href="`#${heading.id}`" class="toc-list-link">{{ heading.title }}</a>
+        <a :href="`#${section}`" class="toc-list-link">{{ section.title }}</a>
       </li>
     </ul>
   </nav>

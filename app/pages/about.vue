@@ -1,13 +1,17 @@
 <script setup lang="ts">
 const {t,rt,tm}=useI18n<{}>();
+
+useHead({
+  title:'About',
+});
 </script>
 
 <template>
-  <h1 class="about-title">{{ t('about.title') }}</h1>
-  <p class="about-description">{{ t('about.description1') }}</p>
-  <p class="about-description">{{ t('about.description2') }}</p>
-  <p class="about-description">{{ t('about.description3') }}</p>
-  <p class="about-description">{{ t('about.description4') }}</p>
+  <h1 class="about-title">{{ t('about-page.title') }}</h1>
+  <p class="about-description">{{ t('about-page.description1') }}</p>
+  <p class="about-description">{{ t('about-page.description2') }}</p>
+  <p class="about-description">{{ t('about-page.description3') }}</p>
+  <p class="about-description">{{ t('about-page.description4') }}</p>
   <ul class="about-features">
     <li
       class="about-features-item"
@@ -27,7 +31,7 @@ const {t,rt,tm}=useI18n<{}>();
           <circle cx="12" cy="12" r="10"/>
           <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/>
         </svg>
-        <span class="about-links-text">{{ t('about.articlesLinkText') }}</span>
+        <span class="about-links-text">{{ t('about-page.articlesLinkText') }}</span>
       </NuxtLinkLocale>
     </li>
     <li class="about-links-item">
@@ -47,7 +51,7 @@ const {t,rt,tm}=useI18n<{}>();
             </clipPath>
           </defs>
         </svg>
-        <span class="about-links-text">{{ t('about.githubRepoLinkText') }}</span>
+        <span class="about-links-text">{{ t('about-page.githubRepoLinkText') }}</span>
       </a>
     </li>
   </ul>

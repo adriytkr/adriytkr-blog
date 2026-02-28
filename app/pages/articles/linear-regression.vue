@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const {
-  headings,
   tags,
   normalPoints,
   messyPoints,
@@ -10,15 +9,12 @@ const {
 
 definePageMeta({
   layout:'article',
-  title:'Linear Regression',
   slug:'linear-regression',
   tags,
-  headings,
 });
 </script>
 
 <template>
-  <h1>Hi</h1>
   <ArticleSection title="Introduction" id="introduction">
     <p>
       Consider the following dataset collected in a research. It relates the size and the price of a house.
