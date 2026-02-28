@@ -4,9 +4,16 @@
   box-sizing:border-box;
 }
 
+html{
+  scroll-behavior:smooth;
+}
+
 body{
-  background-color:var(--background-color);
-  color:var(--text-color);
+  background-color:rgb(var(--background-color));
+  color:rgb(var(--text-color));
+  transition:
+    background-color var(--theme-transition-duration),
+    color var(--theme-transition-duration);
 }
 
 body,
@@ -24,10 +31,12 @@ button{
 
 a{
   text-decoration:none;
-  color:var(--text-color);
+  color:rgb(var(--text-color));
+  transition:color var(--theme-transition-duration);
 }
 
-ul{
+ul,
+ol{
   list-style:none;
 }
 
@@ -52,4 +61,5 @@ p{
   margin-bottom:20px;
   font-size:16px;
   text-indent:32px;
+  line-height:1.7;
 }

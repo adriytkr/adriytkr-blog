@@ -1,33 +1,31 @@
 <script setup lang="ts">
-import useLanguage from '@/shared/composables/useLanguage';
+import {LANGUAGES} from '@/shared/constants/languages';
+
 import LanguageSelectionMenu from './LanguageSelectionMenu.vue';
 
+import useLanguageSelection from '../../composables/useLanguageSelection';
+
 const {
-  isLanguageSelectionOpen,
-  toggleLanguageSelection,
-  LANGUAGES,
   selectedLanguage,
   selectLanguage,
-}=useLanguage();
+}=useLanguageSelection();
 </script>
 
 <template>
   <div class="languageSelection">
-    <button @click="toggleLanguageSelection" class="languageSelection-btn">
+    <button class="languageSelection-btn">
       <svg class="languageSelection-btn-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/>
         <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
         <path d="M2 12h20"/>
       </svg>
     </button>
-    <Transition name="fade">
-      <LanguageSelectionMenu
-        :languages="LANGUAGES"
-        :selected-language="selectedLanguage"
-        @select-language="selectLanguage"
-        v-if="isLanguageSelectionOpen"
-      />
-    </Transition>
+    <LanguageSelectionMenu
+      class="languageSelection-menu"
+      :languages="LANGUAGES"
+      :selected-language="selectedLanguage"
+      @select-language="selectLanguage"
+    />
   </div>
 </template>
 
@@ -37,19 +35,21 @@ const {
 }
 
 .languageSelection-btn{
+  padding:8px;
   background-color:transparent;
   border:none;
+  display:inline-block;
 }
 .languageSelection-btn-icon{
-  stroke:var(--text-color);
+  stroke:rgb(var(--text-color));
 }
-
-.fade-enter-active,
-.fade-leave-active{
-  transition:opacity 125ms ease;
-}
-.fade-enter-from,
-.fade-leave-to{
+.languageSelection-menu{
   opacity:0;
+  transition:opacity 100ms;
+  pointer-events:none;
+}
+.languageSelection:hover .languageSelection-menu{
+  opacity:1;
+  pointer-events:all;
 }
 </style>

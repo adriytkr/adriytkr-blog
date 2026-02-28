@@ -32,22 +32,29 @@ defineEmits<{
 <style scoped>
 .languages{
   min-width:125px;
-  background-color:var(--background-color);
+  background-color:rgb(var(--background-color));
   padding:10px;
-  border:1px solid #ccc;
+  border:1px solid rgb(var(--divider-color));
   border-radius:4px;
   position:absolute;
+  z-index:999;
   top:100%;
   right:0;
   display:flex;
   flex-direction:column;
   row-gap:6px;
 }
+
 .languages-item-btn{
   background-color:transparent;
   border:none;
   outline:none;
-  color:var(--text-color);
+  color:rgb(var(--text-color));
+  transition:color 100ms;
+}
+.languages-item-btn:hover{
+  text-decoration:underline;
+  color:rgb(var(--primary-color));
 }
 .languages-item.is-active .languages-item-btn{
   font-weight:bold;
