@@ -4,6 +4,7 @@ const isDark=useDark({
   valueDark:'dark',
   valueLight:'light',
   initialValue:'auto',
+  disableTransition:false,
 });
 </script>
 
@@ -11,7 +12,6 @@ const isDark=useDark({
   <button
     @click="isDark=!isDark"
     class="toggleDarkMode-btn"
-    :class="{'is-dark':isDark}"
   >
     <div class="toggleDarkMode-btn-indicator-wrapper">
       <div class="toggleDarkMode-btn-indicator"></div>
@@ -75,12 +75,14 @@ const isDark=useDark({
 .toggleDarkMode-btn-icons .icon-moon{
   color:#fff;
 }
+</style>
 
-.toggleDarkMode-btn.is-dark{
+<style>
+:root.dark .toggleDarkMode-btn{
   background-color:#000;
   border:2px solid #fff;
 }
-.toggleDarkMode-btn.is-dark .toggleDarkMode-btn-indicator{
+:root.dark .toggleDarkMode-btn-indicator{
   background-color:#fff;
   transform:translateX(40px);
 }

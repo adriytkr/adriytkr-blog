@@ -1,11 +1,11 @@
 <template>
-  <p>
+  <div class="box">
     <slot></slot>
-  </p>
+  </div>
 </template>
 
 <style scoped>
-p{
+.box{
   background-color:rgb(250,200,220);
   padding:12px;
   border:2px solid red;

@@ -1,10 +1,18 @@
 <script setup lang="ts">
-defineProps<{
-  headings:Section[];
-  title:string;
-  slug:string;
-  tags:string[];
-}>();
+// defineProps<{
+//   headings:Section[];
+//   title:string;
+//   slug:string;
+//   tags:string[];
+// }>();
+
+const route=useRoute();
+const {
+  title='unknown',
+  slug='unknown',
+  tags=[],
+  headings=[]
+}=route.meta;
 
 const {progress,articleRef}=useArticle();
 </script>
@@ -12,14 +20,14 @@ const {progress,articleRef}=useArticle();
 <template>
   <div class="article-container">
     <div class="sticky">
-      <TheHeader/>
-      <ReadProgressBar :progress="progress"/>
+      <LayoutHeader/>
+      <ArticleReadProgressBar :progress="progress"/>
     </div>
     <main class="article-main">
       <article class="article" ref="articleRef">
         <h1 class="article-title">{{ title }}</h1>
         <ArticleTags :slug="slug" :tags="tags"/>
-        <TableOfContents :headings="headings"/>
+        <ArticleTableOfContents :headings="headings"/>
         <slot></slot>
       </article>
     </main>
@@ -36,6 +44,7 @@ const {progress,articleRef}=useArticle();
   display:flex;
 }
 .article{
+  width:100%;
   max-width:700px;
   padding:32px 16px;
   margin:0 auto;

@@ -14,6 +14,9 @@ export default defineNuxtConfig({
     '~/assets/styles/theme.css',
     '~/assets/styles/main.css',
   ],
+  routeRules:{
+    // '/articles':{appLayout:'article'},
+  },
   i18n:{
     defaultLocale:'en',
     locales:[

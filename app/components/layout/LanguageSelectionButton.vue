@@ -15,7 +15,7 @@ const selectedLanguage=computed<Language>(()=>
         <path d="M2 12h20"/>
       </svg>
     </button>
-    <LanguageSelectionMenu
+    <LayoutLanguageSelectionMenu
       class="languageSelection-menu"
       :languages="LANGUAGES"
       :selected-language="selectedLanguage"

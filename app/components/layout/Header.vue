@@ -26,8 +26,8 @@ const navItems:NavItem[]=[
       </ul>
     </nav>
     <div class="header-settings">
-      <ToggleDarkModeButton/>
-      <LanguageSelectionButton/>
+      <LayoutToggleDarkModeButton/>
+      <LayoutLanguageSelectionButton/>
     </div>
   </header>
 </template>
