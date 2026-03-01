@@ -1,5 +1,9 @@
 <script setup lang="ts">
 const {t}=useI18n();
+
+useSeoMeta({
+  title:t('articles-page.title'),
+});
 </script>
 
 <template>
@@ -14,3 +18,11 @@ const {t}=useI18n();
     />
   </ul>
 </template>
+
+<style scoped>
+.articles-list{
+  display:flex;
+  flex-direction:column;
+  row-gap:16px;
+}
+</style>

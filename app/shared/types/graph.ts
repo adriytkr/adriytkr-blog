@@ -19,7 +19,7 @@ export type GraphComponents={
   yAxis?:d3Selection;
 };
 
-export interface GraphProps{
+export type GraphProps={
   points?:Point[][];
   functions?:MathFunction[];
   domain:Interval;

@@ -20,6 +20,11 @@ definePageMeta({
   },
 });
 
+const {t}=useI18n();
+useSeoMeta({
+  title:t('articles.linear-regression.title'),
+});
+
 const dataset:Point[]=[
   {x:1,y:1},
   {x:3,y:4},

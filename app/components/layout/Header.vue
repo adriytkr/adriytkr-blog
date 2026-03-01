@@ -34,6 +34,7 @@ const navItems:NavItem[]=[
 
 <style scoped>
 .header{
+  width:100%;
   max-width:850px;
   padding:16px;
   background-color:rgb(var(--background-color)/50%);

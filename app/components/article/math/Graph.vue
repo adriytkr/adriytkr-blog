@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import type { GraphProps } from '#imports';
+// BUG WTF!!!!!????
+type GraphProps={
+  points?:Point[][];
+  functions?:MathFunction[];
+  domain:Interval;
+  range:Interval;
+  draggable?:boolean;
+};
+//
 
 const props=defineProps<GraphProps>();
 

@@ -4,7 +4,12 @@ import {getLocaleFiles} from './shared/utils/locale';
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/i18n', '@pinia/nuxt', '@vueuse/nuxt'],
+  modules: [
+    '@nuxtjs/i18n',
+    '@pinia/nuxt',
+    '@vueuse/nuxt',
+    '@nuxt/fonts',
+  ],
   imports:{
     dirs:[
       '~/shared/types',

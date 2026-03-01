@@ -22,7 +22,7 @@ const {t}=useI18n();
 </script>
 
 <template>
-  <div class="article-container">
+  <div class="article-wrapper">
     <div class="article-top" :class="{'is-hidden':!isVisible}">
       <div class="article-header-wrapper">
         <LayoutHeader/>
@@ -70,6 +70,7 @@ const {t}=useI18n();
         <path d="m18 15-6-6-6 6"/>
       </svg>
     </button>
+    <LayoutFooter/>
   </div>
 </template>
 
@@ -92,8 +93,14 @@ const {t}=useI18n();
   left:0;
 }
 
+.article-wrapper{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
 .article-main{
   display:grid;
+  flex-grow:1;
 }
 .article{
   width:100%;

@@ -5,6 +5,7 @@ export const getLocaleFiles=(languageCode:LanguageCode):string[]=>{
     'nav.json',
     'about-page.json',
     'articles-page.json',
+    'error-page.json',
     'tags.json',
     'articles/index.json',
   ];
