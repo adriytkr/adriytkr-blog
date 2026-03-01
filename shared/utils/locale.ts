@@ -6,6 +6,7 @@ export const getLocaleFiles=(languageCode:LanguageCode):string[]=>{
     'about-page.json',
     'articles-page.json',
     'tags.json',
+    'articles/index.json',
   ];
   const rawArticlesLocales=['linear-regression.json'];
 

@@ -43,6 +43,7 @@ const {t}=useI18n();
 }
 .toc-list-item:has(.toc-list-link:hover){
   color:rgb(var(--primary-color));
+  text-decoration:underline;
 }
 
 /* @media screen and (min-width:1000px){

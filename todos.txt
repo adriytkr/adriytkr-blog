@@ -1,0 +1,14 @@
+Copy to clipboard??
+Interactive Graph (user can hover points and coordinates show up)
+Highlight current section
+Publication/Update date of article
+Allow user to share article
+Quizzes
+Optional sections
+Change title
+Improve accessbility
+Improve design
+Improve responsiviness
+Improve SEO
+Add related articles to the current one on the end of article
+Add footer
