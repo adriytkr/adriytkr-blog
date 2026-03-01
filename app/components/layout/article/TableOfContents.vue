@@ -1,7 +1,9 @@
 <script setup lang="ts">
 const props=defineProps<{
+  slug:string;
   sections:string[];
 }>();
+const {t}=useI18n();
 </script>
 
 <template>
@@ -13,7 +15,9 @@ const props=defineProps<{
         v-for="section in sections"
         :key="section"
       >
-        <a :href="`#${section}`" class="toc-list-link">{{ section.title }}</a>
+        <a :href="`#${section}`" class="toc-list-link">
+          {{ t(`articles.${slug}.toc.${section}`) }}
+        </a>
       </li>
     </ul>
   </nav>

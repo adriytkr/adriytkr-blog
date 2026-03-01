@@ -1,13 +1,12 @@
 <template>
-  <div class="box">
+  <div class="theorem">
     <slot></slot>
   </div>
 </template>
 
 <style scoped>
-.box{
-  background-color:rgb(var(--secondary-color));
-  border-top:10px solid rgb(var(--primary-color));
+.theorem{
+  border:3px solid rgb(var(--divider-color));
   border-radius:4px;
   padding:12px;
   border-radius:4px;

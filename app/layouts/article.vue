@@ -1,30 +1,32 @@
 <script setup lang="ts">
 const route=useRoute();
 const {
-  slug='unknown',
-  tags=[],
-}=route.meta as {
+  slug,
+  tags,
+  sections
+}=route.meta.props as {
   slug:string;
   tags:string[];
+  sections:string[];
 };
 
 const {progress,articleRef}=useArticle();
-
 const {t}=useI18n();
-const at=(key:string)=>t(`articles.${slug}.${key}`);
 </script>
 
 <template>
   <div class="article-container">
     <div class="sticky">
       <LayoutHeader/>
-      <ArticleReadProgressBar :progress="progress"/>
+      <LayoutArticleReadProgressBar :progress="progress"/>
     </div>
     <main class="article-main">
       <article class="article" ref="articleRef">
-        <h1 class="article-title">{{ at('title') }}</h1>
+        <h1 class="article-title">
+          {{ t(`articles.${slug}.title`) }}
+          </h1>
         <ArticleTags :slug="slug" :tagsSlugs="tags"/>
-        <ArticleTableOfContents :sections="[]"/>
+        <LayoutArticleTableOfContents :slug="slug" :sections="sections"/>
         <slot></slot>
       </article>
     </main>
@@ -35,6 +37,7 @@ const at=(key:string)=>t(`articles.${slug}.${key}`);
 .sticky{
   position:sticky;
   top:0;
+  z-index:999;
 }
 
 .article-main{
@@ -42,7 +45,7 @@ const at=(key:string)=>t(`articles.${slug}.${key}`);
 }
 .article{
   width:100%;
-  max-width:700px;
+  max-width:850px;
   padding:32px 16px;
   margin:0 auto;
 }

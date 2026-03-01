@@ -1,11 +1,5 @@
 <script setup lang="ts">
-const isDark=useDark({
-  storageKey:THEME_STORAGE_KEY,
-  valueDark:'dark',
-  valueLight:'light',
-  initialValue:'auto',
-  disableTransition:false,
-});
+const isDark=useAppDark();
 </script>
 
 <template>

@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import 'katex/dist/katex-swap.min.css';
+
 const props=defineProps<{
   formula:string;
 }>();
 
-const {rendered}=useKatex(props.formula,true);
+const {rendered}=useLatex(props.formula,true);
 </script>
 
 <template>

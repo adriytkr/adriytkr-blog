@@ -8,31 +8,21 @@ export type MathFunction={
 
 export type TheScale=ScaleLinear<number,number>;
 
-type d3Selection=d3.Selection<SVGSVGElement,unknown,null,undefined>
-export type Components={
-  svg?:d3Selection;
+type d3Selection=d3.Selection<SVGGElement,unknown,null,undefined>
+export type GraphComponents={
   root?:d3Selection;
   grid?:d3Selection;
   axes?:d3Selection;
   functions?:d3Selection;
   points?:d3Selection;
+  xAxis?:d3Selection;
+  yAxis?:d3Selection;
 };
 
-export interface Size{
-  width?:number;
-  height?:number;
-  xScale?:TheScale;
-  yScale?:TheScale;
-};
-
-export type DesmosProps={
-  pointSeries?:Point[][];
+export interface GraphProps{
+  points?:Point[][];
   functions?:MathFunction[];
   domain:Interval;
   range:Interval;
   draggable?:boolean;
-};
-
-export interface GraphCanvasOptions extends DesmosProps{
-  containerRef:Ref<SVGSVGElement|null>;
 };

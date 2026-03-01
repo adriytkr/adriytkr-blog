@@ -15,7 +15,7 @@ useHead({
   <ul class="about-features">
     <li
       class="about-features-item"
-      v-for="feature in tm('about.features')"
+      v-for="feature in tm('about-page.features')"
     >
       {{ rt(feature) }}
     </li>
