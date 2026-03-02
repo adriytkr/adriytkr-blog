@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineProps<{
-  article:Article;
+  article:ArticleMetadata;
 }>();
 
 const {t}=useI18n();

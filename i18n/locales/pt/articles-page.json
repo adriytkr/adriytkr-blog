@@ -7,6 +7,10 @@
       "linear-regression":{
         "title":"Regressão Linear",
         "description":"Aprenda a prever resultados a partir de dados desenvolvendo um modelo que captura relações dentro de um conjunto de dados amostral."
+      },
+      "gradient-descent":{
+        "title":"Gradiente Descendente",
+        "description":"Gradiente Descendente"
       }
     }
   }

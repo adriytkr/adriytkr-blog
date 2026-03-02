@@ -1,6 +1,11 @@
 <script setup lang="ts">
 const {t}=useI18n();
 
+const {data:articles}=await useAsyncData(
+  'articles',
+  ()=>queryCollection('articles').all(),
+);
+
 useSeoMeta({
   title:t('articles-page.title'),
 });

@@ -6,10 +6,14 @@ export const getLocaleFiles=(languageCode:LanguageCode):string[]=>{
     'about-page.json',
     'articles-page.json',
     'error-page.json',
+    'nonexistent-article-error-page.json',
     'tags.json',
     'articles/index.json',
   ];
-  const rawArticlesLocales=['linear-regression.json'];
+  const rawArticlesLocales=[
+    'linear-regression.json',
+    'gradient-descent.json',
+  ];
 
   const localeFiles=[
     ...rawCommonLocales.map(locale=>`${languageCode}/${locale}`),

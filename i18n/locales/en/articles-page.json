@@ -7,6 +7,10 @@
       "linear-regression":{
         "title":"Linear Regression",
         "description":"Learn how to predict outcomes from data by building a model that captures relationships within a sample dataset."
+      },
+      "gradient-descent":{
+        "title":"Gradient Descent",
+        "description":"Gradient Descent"
       }
     }
   }

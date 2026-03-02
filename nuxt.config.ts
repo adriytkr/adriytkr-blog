@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@vueuse/nuxt',
     '@nuxt/fonts',
+    '@nuxt/content',
   ],
   imports:{
     dirs:[
@@ -36,5 +37,6 @@ export default defineNuxtConfig({
         files:getLocaleFiles('pt'),
       },
     ],
+    vueI18n:'./i18n.config.ts',
   },
 });

@@ -17,14 +17,14 @@ export default function(){
   };
 
   let lastScrollPosition=0;
-  const isVisible=ref(false);
+  const isVisible=ref(true);
   const showScrollTop=ref(false);
   const handleScroll=()=>{
     const currentScrollPosition=window.scrollY;
 
     showScrollTop.value=currentScrollPosition>400;
 
-    if(Math.abs(currentScrollPosition-lastScrollPosition)<10) return;
+    if(Math.abs(currentScrollPosition-lastScrollPosition)<20) return;
 
     isVisible.value=currentScrollPosition<lastScrollPosition||currentScrollPosition<50;
     lastScrollPosition=currentScrollPosition;

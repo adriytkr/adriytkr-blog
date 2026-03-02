@@ -1,0 +1,20 @@
+export default defineI18nConfig(()=>{
+  return{
+    datetimeFormats:{
+      en:{
+        long:{
+          month:'long',
+          day:'numeric',
+          year:'numeric',
+        },
+      },
+      pt:{
+        long:{
+          month:'long',
+          day:'numeric',
+          year:'numeric',
+        },
+      },
+    },
+  };
+});

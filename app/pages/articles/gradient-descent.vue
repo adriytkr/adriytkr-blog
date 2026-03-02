@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import SectionCollapsible from '~/components/article/SectionCollapsible.vue';
-
-const SLUG='linear-regression';
+const SLUG='gradient-descent';
 
 const sections:string[]=[
   'introduction',
@@ -31,10 +29,6 @@ const dataset:Point[]=[
 
 <template>
   <ArticleSection title="Introduction" id="introduction">
-    <SectionCollapsible title="Proof">
-      <h1>Hi</h1>
-      <p>This is optional</p>
-    </SectionCollapsible>
     <ArticleMathLatexDisplay formula="x=10"/>
     <ArticleMathLatexInline formula="x=20"/>
     <ArticleWarningBox>
