@@ -1,5 +1,10 @@
 import type {ScaleLinear} from 'd3';
 
+export type GraphState={
+  functions?:MathFunction[];
+  points?:Point[][];
+};
+
 export type MathFunction={
   func:(x:number)=>number;
   samples:number;

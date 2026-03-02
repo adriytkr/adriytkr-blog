@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import SectionCollapsible from '~/components/article/SectionCollapsible.vue';
-
 const SLUG='linear-regression';
-
 const sections:string[]=[
   'introduction',
   'problem',
@@ -23,51 +20,36 @@ definePageMeta({
 
 useArticleMeta(SLUG);
 
-const dataset:Point[]=[
-  {x:1,y:1},
-  {x:3,y:4},
+const currentState=ref(0);
+const states:GraphState[]=[
+  {
+    points:[],
+    functions:[],
+  },
+  {
+    points:[
+      [{x:1,y:1},{x:2,y:4}],
+    ],
+    functions:[
+      {
+        domain:[0,2],
+        samples:100,
+        func:x=>x**2,
+      },
+    ],
+  },
 ];
 </script>
 
 <template>
   <ArticleSection title="Introduction" id="introduction">
-    <SectionCollapsible title="Proof">
-      <h1>Hi</h1>
-      <p>This is optional</p>
-    </SectionCollapsible>
-    <ArticleMathLatexDisplay formula="x=10"/>
-    <ArticleMathLatexInline formula="x=20"/>
-    <ArticleWarningBox>
-      <p>This is a test</p>
-      <p>Super warning</p>
-    </ArticleWarningBox>
-    <ArticleTheorem>
-      <p>This is the main theorem of this shit</p>
-      <p>This is the main theorem of this shit</p>
-      <p>This is the main theorem of this shit</p>
-      <p>This is the main theorem of this shit</p>
-    </ArticleTheorem>
-    <ArticleMathDatasetTable :dataset="dataset"/>
-    <ArticleMathDatasetTable :dataset="dataset"/>
-    <ArticleMathDatasetTable :dataset="dataset"/>
     <ArticleMathGraph
-      :points="[
-        [
-          {x:3,y:9},
-          {x:4,y:16},
-        ],
-      ]"
-      :functions="[
-        {
-          domain:[-3,3],
-          samples:300,
-          func:x=>x**2,
-        },
-      ]"
       :domain="[-3,3]"
       :range="[-3,3]"
+      :points="states[currentState]?.points"
+      :functions="states[currentState]?.functions"
       draggable
     />
-    <ArticleMathDatasetTable :dataset="dataset"/>
+    <button @click="currentState++">Next</button>
  </ArticleSection>
 </template>

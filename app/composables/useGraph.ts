@@ -14,7 +14,6 @@ export default function(props:GraphProps){
       .domain(props.domain)
       .range([0,width.value])
   );
-
   const yScale=computed<TheScale>(()=>
     d3
       .scaleLinear()
@@ -22,10 +21,16 @@ export default function(props:GraphProps){
       .range([height.value,0])
   );
 
+  const currentXScale=ref<TheScale>(xScale.value);
+  const currentYScale=ref<TheScale>(yScale.value);
+
   function init(){
     initSVG();
     initGroups();
     initZoom();
+
+    currentXScale.value=xScale.value;
+    currentYScale.value=yScale.value;
 
     draw(xScale.value,yScale.value);
   }
@@ -56,10 +61,10 @@ export default function(props:GraphProps){
     const zoom=d3.zoom<SVGSVGElement,unknown>()
       .on('zoom',e=>{
         const t=e.transform;
-        const newXScale=t.rescaleX(xScale.value);
-        const newYScale=t.rescaleY(yScale.value);
+        currentXScale.value=t.rescaleX(xScale.value);
+        currentYScale.value=t.rescaleY(yScale.value);
 
-        draw(newXScale,newYScale);
+        draw(currentXScale.value,currentYScale.value);
       });
 
     if(props.draggable)svgSelection.value!.call(zoom);
@@ -231,8 +236,11 @@ export default function(props:GraphProps){
   }
 
   watch(
-    ()=>props.functions,
-    ()=>drawFunctions(xScale.value,yScale.value),
+    ()=>[props.functions,props.points],
+    ()=>{
+      drawPoints(currentXScale.value,currentYScale.value);
+      drawFunctions(currentXScale.value,currentYScale.value)
+    },
     {deep:true},
   );
 
