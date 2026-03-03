@@ -1,3 +1,5 @@
+import { MathObject } from '~/shared/types/math/math-objects/bases';
+import {AbstractFunctionObject} from '~/shared/types/math/math-objects/AbstractFunctionObject';
 import * as d3 from 'd3';
 
 export default function(){
@@ -68,7 +70,7 @@ export default function(){
           .y(p => currentYScale(p.y));
 
         components.functions
-          .selectAll<SVGPathElement, FunctionObject>('path')
+          .selectAll<SVGPathElement, AbstractFunctionObject>('path')
           .attr('d', d => lineGenerator(d.points)); 
       }
   }
@@ -191,20 +193,6 @@ export default function(){
 
   function add(object:MathObject){
     objects.value.push(object);
-    if(isReactive(object)){
-      console.log(`${object} is reactive`);
-
-      if(object instanceof FunctionObject){
-        watch(()=>[object.f,object.domain],()=>{
-          object.updatePoints();
-          requestUpdate();
-        });
-      }else{
-        watch(object,()=>{
-          requestUpdate();
-        }, { deep: true });
-      }
-    }
 
     if(object instanceof PointObject&&components.points){
       return components.points
@@ -227,7 +215,7 @@ export default function(){
         .attr('y1',currentYScale(object.from.y))
         .attr('x2',currentXScale(object.to.x))
         .attr('y2',currentYScale(object.to.y));
-    }else if(object instanceof FunctionObject&&components.functions){
+    }else if(object instanceof AbstractFunctionObject&&components.functions){
       const path=d3
         .line<Point>()
         .x(p=>currentXScale(p.x))
@@ -240,7 +228,7 @@ export default function(){
         .attr('stroke','black')
         .attr('stroke-width',2)
         .attr('d',path(object.points));
-    }else if(object instanceof LineObject&&components.shapes){
+    }else if(object instanceof LineSegmentObject&&components.shapes){
       return components.shapes
         .append('line')
         .datum(object)
@@ -337,7 +325,7 @@ export default function(){
   }
 
   function ungrowVector(
-    vector:VectorObject,
+    vector:Growable&MathObject,
     options:AnimationOptions=DEFAULT_ANIMATION_OPTIONS
   ):LazyAnimation{
     return async()=>{
@@ -346,7 +334,7 @@ export default function(){
       if(!selection)return;
       return new Promise<void>(resolve=>{
         selection
-          .transition()
+          .transition('ungrow')
           .duration(options.duration)
           .attr('x2',currentXScale(vector.from.x))
           .attr('y2',currentYScale(vector.from.y))
@@ -424,7 +412,7 @@ export default function(){
       return new Promise<void>(resolve=>{
         if(object instanceof PointObject){
           moveTo(object,delta,options);
-        }else if(object instanceof VectorObject||object instanceof LineObject){
+        }else if(object instanceof VectorObject||object instanceof LineSegmentObject){
           const startFrom={...object.from};
           const startTo={...object.to};
 
@@ -446,14 +434,6 @@ export default function(){
             .on('end',()=>resolve());
         }
       });
-    };
-  }
-
-  function applyMatrixToPoint(p: Point, theMatrix: Matrix2x2): Point {
-    const [[a,b],[c,d]] = theMatrix;
-    return {
-      x: a*p.x + b*p.y,
-      y: c*p.x + d*p.y
     };
   }
 
@@ -564,5 +544,11 @@ function parameterChange(
     applyMatrix,
     addAxes,
     parameterChange,
+    requestUpdate,
   };
 }
+
+// to do later
+// group math objects
+// add lerp function
+// dirty

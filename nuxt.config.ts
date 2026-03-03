@@ -13,7 +13,8 @@ export default defineNuxtConfig({
   ],
   imports:{
     dirs:[
-      '~/shared/types',
+      '~/shared/types/**/*',
+      '~/shared/types/math-objects',
       '~/shared/utils',
       '~/shared/constants',
     ],

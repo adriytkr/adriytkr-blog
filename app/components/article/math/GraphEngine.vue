@@ -14,12 +14,15 @@ const {
   applyMatrix,
   addAxes,
   parameterChange,
-}=useGraph();
+  requestUpdate,
+}=useGraphEngine();
+
 const api:GraphAPI={
   add,
   remove,
   clear,
   play,
+  requestUpdate,
   animate:{
     fadeIn,
     growVector,
