@@ -1,7 +1,10 @@
 import { AbstractFunctionObject } from '~/shared/types/math/math-objects/AbstractFunctionObject';
 import type { MathObject } from '~/shared/types/math/math-objects/bases';
-import type { Animation, AnimationOptions, LazyAnimation, ObjectStyle } from '~/shared/types/math/engine/api';
-import type { Shiftable } from '~/shared/types/math/math-objects/interfaces';
+import type { AnimationOptions, Animations, ObjectStyle } from '~/shared/types/math/engine/api';
+import type { BaseAnimation } from '~/shared/types/math/engine/animations/BaseAnimation';
+import { FadeInAnimation } from '~/shared/types/math/engine/animations/FadeInAnimation';
+import { FadeOutAnimation } from '~/shared/types/math/engine/animations/FadeOutAnimation';
+import { ShiftAnimation } from '~/shared/types/math/engine/animations/ShiftAnimation';
 
 import * as d3 from 'd3';
 
@@ -18,14 +21,14 @@ export default function(){
   let currentYScale:d3.ScaleLinear<number,number>;
 
   let objects:MathObject[]=[];
-  let animations:Animation[]=[];
+  let animations:BaseAnimation[]=[];
   let objectStyles=new WeakMap<MathObject,ObjectStyle>();
 
-  function play(...anims:LazyAnimation[]){
-    const r=anims.map(a=>a());
+  function play(...anims:BaseAnimation[]){
     return Promise.all(
-      r.map(anim=>
+      anims.map(anim=>
         new Promise<void>(resolve=>{
+          anim.setup();
           anim.startTime=performance.now();
           anim.resolve=resolve;
           animations.push(anim);
@@ -35,6 +38,11 @@ export default function(){
   }
 
   function tick(now:number){
+    if(animations.length===0){
+      requestAnimationFrame(tick);
+      return;
+    }
+
     animations.forEach((anim,index)=>{
       const elapsed=now-anim.startTime;
       const alpha=Math.min(elapsed/anim.duration,1);
@@ -49,66 +57,6 @@ export default function(){
 
     updateScene();
     requestAnimationFrame(tick);
-  }
-
-  function fadeIn(
-    object:MathObject,
-    options:AnimationOptions=DEFAULT_ANIMATION_OPTIONS
-  ):LazyAnimation{
-    return ():Animation=>{
-      const objectStyle=getObjectStyle(object);
-      objectStyle.opacity=0;
-      return{
-        duration:options.duration,
-        update(alpha:number){
-          objectStyle.opacity=alpha;
-        },
-        resolve(){},
-        startTime:0,
-      };
-    };
-  }
-
-  function fadeOut(
-    object:MathObject,
-    options:AnimationOptions=DEFAULT_ANIMATION_OPTIONS,
-  ):LazyAnimation{
-    return ():Animation=>{
-      const objectStyle=getObjectStyle(object);
-      objectStyle.opacity=1;
-      return{
-        duration:options.duration,
-        update(alpha:number){
-          objectStyle.opacity=1-alpha;
-        },
-        resolve(){},
-        startTime:0,
-      };
-    };
-  }
-
-  function shift(
-    object:Shiftable,
-    delta:Point,
-    options:AnimationOptions=DEFAULT_ANIMATION_OPTIONS,
-  ):LazyAnimation{
-    return ():Animation=>{
-      let lastAlpha=0;
-      return{
-        duration:options.duration,
-        update(alpha:number){
-          const changeInAlpha=alpha-lastAlpha;
-          const incrementalDelta:Point={
-            x:delta.x*changeInAlpha,
-            y:delta.y*changeInAlpha,
-          };
-          object.shift(incrementalDelta);
-          lastAlpha=alpha;
-        },
-        resolve(){},
-        startTime:0,
-      };
-    };
   }
 
   function init(){
@@ -325,6 +273,15 @@ export default function(){
         .remove();
   }
 
+  const animate:Animations={
+    fadeIn:(object:MathObject,options:AnimationOptions=DEFAULT_ANIMATION_OPTIONS)=>
+      new FadeInAnimation(object,getObjectStyle,options),
+    fadeOut:(object:MathObject,options:AnimationOptions=DEFAULT_ANIMATION_OPTIONS)=>
+      new FadeOutAnimation(object,getObjectStyle,options),
+    shift:(object:Shiftable,delta:Point,options:AnimationOptions=DEFAULT_ANIMATION_OPTIONS)=>
+      new ShiftAnimation(object,delta,options),
+  };
+
   onMounted(init);
 
   return{
@@ -333,9 +290,7 @@ export default function(){
     remove,
     clear,
     play,
-    fadeIn,
-    fadeOut,
-    shift,
+    animate,
   };
 }
 

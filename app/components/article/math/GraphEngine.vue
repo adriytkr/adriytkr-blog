@@ -5,9 +5,7 @@ const {
   remove,
   clear,
   play,
-  fadeIn,
-  fadeOut,
-  shift,
+  animate,
 }=useGraphEngine();
 
 const api:GraphAPI={
@@ -15,11 +13,7 @@ const api:GraphAPI={
   remove,
   clear,
   play,
-  animate:{
-    fadeIn,
-    fadeOut,
-    shift,
-  },
+  animate,
 };
 defineExpose(api);
 </script>

@@ -1,4 +1,6 @@
-import type { MathObject, SegmentObject } from '~/shared/types/math/math-objects/bases';
+import type { MathObject } from '~/shared/types/math/math-objects/bases';
+import type { BaseAnimation } from '~/shared/types/math/engine/animations/BaseAnimation';
+import type { ShiftAnimation } from '~/shared/types/math/engine/animations/ShiftAnimation';
 
 export interface ObjectStyle{
   opacity:number;
@@ -8,32 +10,23 @@ export interface AnimationOptions{
   duration:number;
 };
 
-export type Animation={
-  duration:number;
-  startTime: number;
-  update:(alpha:number)=>void;
-  resolve:()=>void;
-};
+export type GetObjectStyle=(object:MathObject)=>ObjectStyle;
 
-export interface AnimationOptions{
-  duration:number;
-};
-
-export type LazyAnimation=()=>Animation;
-export type GeneralAnimation=(object:MathObject,options?:AnimationOptions)=>LazyAnimation;
-export type ShiftableAnimation=(object:Shiftable,delta:Point,options?:AnimationOptions)=>LazyAnimation;
-export type SegmentAnimation=(segment:SegmentObject,options?:AnimationOptions)=>LazyAnimation;
+export type TypeGeneralAnimation<T extends BaseAnimation>=
+  (object:MathObject,option?:AnimationOptions)=>T;
+export type TypeShiftAnimation<T extends BaseAnimation>=
+  (object:Shiftable,delta:Point,option?:AnimationOptions)=>T;
 
 export interface Animations{
-  fadeIn:GeneralAnimation;
-  fadeOut:GeneralAnimation;
-  shift:ShiftableAnimation;
+  fadeIn:TypeGeneralAnimation<FadeInAnimation>;
+  fadeOut:TypeGeneralAnimation<FadeOutAnimation>;
+  shift:TypeShiftAnimation<ShiftAnimation>;
 };
 
 export interface GraphAPI{
   add:(object:MathObject)=>void;
   remove:(object:MathObject)=>void;
   clear:()=>void;
-  play:(...animations:LazyAnimation[])=>Promise<void[]>,
+  play:(...animations:BaseAnimation[])=>Promise<void[]>,
   animate:Animations,
 };
