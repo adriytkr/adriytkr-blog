@@ -2,7 +2,7 @@ import { MathObject, type MathObjectType } from '~/shared/types/math/math-object
 
 export abstract class AbstractFunctionObject extends MathObject{
   public readonly type:MathObjectType='function';
-  public domain:Interval;
+  public domain?:Interval;
   public samples:number;
 
   protected m_points:Point[]=[];
@@ -10,24 +10,16 @@ export abstract class AbstractFunctionObject extends MathObject{
 
   constructor(
     id:number,
-    domain:Interval,
     samples:number,
-  ) {
+    domain?:Interval,
+  ){
     super(id);
-    this.domain=domain;
     this.samples=samples;
+    this.domain=domain;
     this.m_isDirty=true;
   }
-  public get points():Point[]{
-    if(this.m_isDirty){
-      this.updatePoints();
-      this.m_isDirty=false;
-    }
-
-    return this.m_points;
-  }
-  public updatePoints(){
-    const [x0,x1]=this.domain;
+  public generatePoints(domain:Interval):Point[]{
+    const [x0,x1]=domain;
     const step=(x1-x0)/this.samples;
     const newPoints=[];
     for(let i=0;i<=this.samples;i++){
@@ -35,7 +27,7 @@ export abstract class AbstractFunctionObject extends MathObject{
       const newPoint:Point={x,y:this.evaluate(x)};
       newPoints.push(newPoint);
     }
-    this.m_points=newPoints;
+    return newPoints;
   }
   public abstract evaluate:MathFunction;
 }

@@ -1,17 +1,21 @@
 import { AbstractFunctionObject } from '~/shared/types/math/math-objects/AbstractFunctionObject';
-import type { MathObject } from '~/shared/types/math/math-objects/bases';
+import type { MathObject, MathObjectType } from '~/shared/types/math/math-objects/bases';
 import type { AnimationOptions, Animations, ObjectStyle } from '~/shared/types/math/engine/api';
 import type { BaseAnimation } from '~/shared/types/math/engine/animations/BaseAnimation';
 import { FadeInAnimation } from '~/shared/types/math/engine/animations/FadeInAnimation';
 import { FadeOutAnimation } from '~/shared/types/math/engine/animations/FadeOutAnimation';
 import { ShiftAnimation } from '~/shared/types/math/engine/animations/ShiftAnimation';
 import { CameraObject } from '~/shared/types/math/math-objects/CameraObject';
+import type { RenderContext } from '~/shared/types/math/engine/core';
+
+import {DEFAULT_ANIMATION_OPTIONS,DEFAULT_CAMERA} from '~/shared/constants/graph';
 
 import * as d3 from 'd3';
+import type { BaseRenderer } from '~/shared/types/math/engine/renderers/BaseRenderer';
 
 export default function(){
   const containerRef=ref<SVGSVGElement|null>(null);
-  let svgSelection:d3.Selection<SVGSVGElement,unknown,null,undefined>|null=null;
+  let svgSelection:d3.Selection<SVGSVGElement,unknown,null,undefined>;
   const components:GraphComponents={};
 
   const theWidth=ref(0);
@@ -25,7 +29,8 @@ export default function(){
   let objectStyles=new WeakMap<MathObject,ObjectStyle>();
   let animations:BaseAnimation[]=[];
   let cameras:CameraObject[]=[];
-  let activeCamera:CameraObject|null=null;
+
+  let activeCamera:CameraObject=DEFAULT_CAMERA;
 
   let needsUpdate=false;
 
@@ -43,6 +48,9 @@ export default function(){
   }
 
   function tick(now:number){
+    requestAnimationFrame(tick);
+    if(animations.length===0&&!needsUpdate)return;
+
     if(animations.length>0){
       animations.forEach((anim,index)=>{
         const elapsed=now-anim.startTime;
@@ -63,7 +71,6 @@ export default function(){
       updateScene();
       needsUpdate=false;
     }
-    requestAnimationFrame(tick);
   }
 
   function init(){
@@ -71,12 +78,12 @@ export default function(){
     initGroups();
     updateScalesFromCamera();
     initArrowMarker();
+
+    needsUpdate=true;
     startAnimationLoop();
   }
 
   function initZoom(){
-    if(!svgSelection||!activeCamera)return;
-
     const zoomBehavior=d3
       .zoom<SVGSVGElement,unknown>()
       .scaleExtent([0.5,10])
@@ -86,10 +93,8 @@ export default function(){
         const newXScale=transform.rescaleX(baseXScale);
         const newYScale=transform.rescaleY(baseYScale);
 
-        if(activeCamera){
-          activeCamera.domain=newXScale.domain();
-          activeCamera.range=newYScale.domain();
-        }
+        activeCamera.domain=newXScale.domain();
+        activeCamera.range=newYScale.domain();
 
         needsUpdate=true;
       });
@@ -102,8 +107,6 @@ export default function(){
   }
 
   function updateScalesFromCamera(){
-    if(!activeCamera)return;
-
     if(!baseXScale||!baseYScale){
       baseXScale=d3
         .scaleLinear()
@@ -132,11 +135,10 @@ export default function(){
     baseYScale=undefined;
     updateScalesFromCamera();
 
-    if(svgSelection)
-      svgSelection.call(
-        d3.zoom<SVGSVGElement,unknown>().transform,
-        d3.zoomIdentity
-      );
+    svgSelection.call(
+      d3.zoom<SVGSVGElement,unknown>().transform,
+      d3.zoomIdentity
+    );
 
     initZoom();
     updateScene();
@@ -153,25 +155,16 @@ export default function(){
   }
 
   function initGroups(){
-    if(!svgSelection)return;
-
     components.root=svgSelection
       .append('g')
       .attr('class','root');
-    components.points=components.root
-      .append('g')
-      .attr('class','points');
-    components.vectors=components.root
-      .append('g')
-      .attr('class','vectors');
-    components.functions=components.root
-      .append('g')
-      .attr('class','functions');
+
+    renderers.set('point',new PointRenderer(components.root));
+    renderers.set('function',new FunctionRenderer(components.root));
+    renderers.set('vector',new VectorRenderer(components.root));
   }
 
   function initArrowMarker(){
-    if(!svgSelection)return;
-
     const defs=svgSelection.append('defs');
 
     defs
@@ -188,105 +181,19 @@ export default function(){
       .attr('fill','black');
   }
 
-  function mountPoints(){
-    if(!components.points)return;
-
-    const points=objects.filter(object=>object instanceof PointObject);
-    components.points
-      .selectAll<SVGCircleElement,PointObject>('circle')
-      .data(points,p=>p.id)
-      .join('circle')
-      .attr('data-id',p=>p.id)
-      .attr('class','point')
-      .attr('r',p=>p.size)
-      .attr('fill','black')
-      .style('opacity',p=>getObjectStyle(p).opacity)
-      .attr('cx',p=>currentXScale(p.at.x))
-      .attr('cy',p=>currentYScale(p.at.y));
-  }
-
-  function mountVectors(){
-    if(!components.vectors)return;
-
-    const vectors=objects.filter(object=>object instanceof VectorObject);
-    components.vectors
-      .selectAll<SVGLineElement,VectorObject>('line')
-      .data(vectors,v=>v.id)
-      .join('line')
-      .attr('data-id',v=>v.id)
-      .attr('class','vector')
-      .attr('stroke','black')
-      .attr('stroke-width',3)
-      .attr('marker-end','url(#arrow)')
-      .style('opacity',v=>getObjectStyle(v).opacity)
-      .attr('x1',v=>currentXScale(v.from.x))
-      .attr('y1',v=>currentYScale(v.from.y))
-      .attr('x2',v=>currentXScale(v.to.x))
-      .attr('y2',v=>currentYScale(v.to.y));
-  }
-
-  function mountFunctions(){
-    if(!components.functions)return;
-
-    const path=d3
-      .line<Point>()
-      .x(p=>currentXScale(p.x))
-      .y(p=>currentYScale(p.y));
-    const functions=objects.filter(object=>object instanceof AbstractFunctionObject);
-    components.functions
-      .selectAll<SVGPathElement,AbstractFunctionObject>('path')
-      .data(functions,f=>f.id)
-      .join('path')
-      .attr('data-id',f=>f.id)
-      .attr('class','function')
-      .attr('fill','none')
-      .attr('stroke','black')
-      .attr('stroke-width',2)
-      .attr('d',f=>path(f.points));
-  }
-
-  function mountAll(){
-    mountPoints();
-    mountVectors();
-    mountFunctions();
-  }
-
-  function updatePoints(){
-    if(!components.points)return;
-    components.points
-      .selectAll<SVGCircleElement, PointObject>('.point')
-      .style('opacity',p=>getObjectStyle(p).opacity)
-      .attr('cx',p=>currentXScale(p.at.x))
-      .attr('cy',p=>currentYScale(p.at.y));
-  }
-
-  function updateVectors(){
-    if(!components.vectors)return;
-    components.vectors
-      .selectAll<SVGLineElement,VectorObject>('.vector')
-      .style('opacity',v=>getObjectStyle(v).opacity)
-      .attr('x1',v=>currentXScale(v.from.x))
-      .attr('y1',v=>currentYScale(v.from.y))
-      .attr('x2',v=>currentXScale(v.to.x))
-      .attr('y2',v=>currentYScale(v.to.y));
-  }
-
-  function updateFunctions(){
-    if(!components.functions)return;
-    const path=d3
-      .line<Point>()
-      .x(p=>currentXScale(p.x))
-      .y(p=>currentYScale(p.y));
-    components.functions
-      .selectAll<SVGPathElement,AbstractFunctionObject>('.function')
-      .style('opacity',f=>getObjectStyle(f).opacity)
-      .attr('d',f=>path(f.points));
-  }
-
+  const renderers=new Map<MathObjectType,BaseRenderer<MathObject>>;
   function updateScene(){
-    updatePoints();
-    updateVectors();
-    updateFunctions();
+    const context:RenderContext={
+      xScale:currentXScale,
+      yScale:currentYScale,
+      activeCamera,
+      getObjectStyle,
+    };
+
+    renderers.forEach((renderer,type)=>{
+      const objs=objects.filter(object=>object.type===type);
+      renderer.render(objs,context);
+    });
   }
 
   function getObjectStyle(object:MathObject){
@@ -305,7 +212,7 @@ export default function(){
     }else{
       objects.push(object);
       objectStyles.set(object,{opacity:1});
-      mountAll();
+      needsUpdate=true;
     }
   }
 
@@ -313,26 +220,13 @@ export default function(){
     if(!components.root)return;
 
     objects=objects.filter(o=>o.id!==object.id);
-    components.root
-      .selectAll(`[data-id="${object.id}"]`)
-      .remove();
+    needsUpdate=true;
   }
 
   function clear(){
     objects=[];
-
-    if(components.points)
-      components.points
-        .selectAll('*')
-        .remove();
-    if(components.vectors)
-      components.vectors
-        .selectAll('*')
-        .remove();
-    if(components.functions)
-      components.functions
-        .selectAll('*')
-        .remove();
+    renderers.forEach(renderer=>renderer.clear());
+    needsUpdate=true;
   }
 
   const animate:Animations={

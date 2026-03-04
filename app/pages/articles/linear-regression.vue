@@ -26,24 +26,26 @@ onMounted(()=>{
 });
 
 const theVector=new VectorObject(1,{x:0,y:0},{x:2,y:2});
-const thePoint=new PointObject(2,{x:1,y:1},3);
-const theFunction=new LinearFunctionObject(3,0,1,[0,3],100);
+const thePoint=new PointObject(2,{x:1,y:-1},5);
 const camera=new CameraObject(4,[-3,3],[-3,3]);
-const camera2=new CameraObject(4,[-2,4],[-3,3]);
+const camera2=new CameraObject(5,[-2,4],[-3,3]);
+const theFunction=new GeneralFunctionObject(6,x=>x**2,100);
+const linearFunction=new LinearFunctionObject(7,3,1,5,[-3,3]);
 
 async function begin(){
   if(!graphRef.value)return;
 
   graphRef.value.add(camera);
-  graphRef.value.add(camera2);
+  graphRef.value.setActiveCamera(camera);
+  graphRef.value.add(linearFunction);
   graphRef.value.add(thePoint);
   graphRef.value.add(theVector);
   graphRef.value.add(theFunction);
-  await graphRef.value.play(
-    graphRef.value.animate.fadeIn(thePoint),
-    graphRef.value.animate.fadeIn(theVector),
-    graphRef.value.animate.fadeIn(theFunction),
-  );
+  // await graphRef.value.play(
+  //   graphRef.value.animate.fadeIn(thePoint),
+  //   graphRef.value.animate.fadeIn(theVector),
+  //   graphRef.value.animate.fadeIn(theFunction),
+  // );
   // graphRef.value.add(theVector); // this adds immediately on the scene
   // graphRef.value.add(thePoint); // this adds immediately on the scene
   // graphRef.value.add(theFunction); // this adds immediately on the scene
