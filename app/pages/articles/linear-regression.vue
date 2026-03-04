@@ -32,9 +32,12 @@ const theFunction=new LinearFunctionObject(3,0,1,[0,3],100);
 async function begin(){
   if(!graphRef.value)return;
 
-  graphRef.value.add(theVector); // this adds immediately on the scene
-  graphRef.value.add(thePoint); // this adds immediately on the scene
-  graphRef.value.add(theFunction); // this adds immediately on the scene
+  await graphRef.value.play(
+    graphRef.value.animate.fadeIn(theVector),
+  );
+  // graphRef.value.add(theVector); // this adds immediately on the scene
+  // graphRef.value.add(thePoint); // this adds immediately on the scene
+  // graphRef.value.add(theFunction); // this adds immediately on the scene
   // graphRef.value.remove(theVector); // this removes immediately on the scene
 
   // if i wanted I could add the vector with a specific animation

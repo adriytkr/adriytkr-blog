@@ -1,12 +1,13 @@
 import { AbstractFunctionObject } from '~/shared/types/math/math-objects/AbstractFunctionObject';
 import type { MathObject } from '~/shared/types/math/math-objects/bases';
+import type { Animation, AnimationOptions, LazyAnimation } from '~/shared/types/math/engine/api';
 
 import * as d3 from 'd3';
 
 export default function(){
   const containerRef=ref<SVGSVGElement|null>(null);
-  const svgSelection=ref<d3.Selection<SVGSVGElement,unknown,null,undefined>|null>(null);
-  const components=reactive<GraphComponents>({});
+  let svgSelection:d3.Selection<SVGSVGElement,unknown,null,undefined>|null=null;
+  const components:GraphComponents={};
 
   const theWidth=ref(0);
   const theHeight=ref(0);
@@ -15,13 +16,61 @@ export default function(){
   let currentXScale:d3.ScaleLinear<number,number>;
   let currentYScale:d3.ScaleLinear<number,number>;
 
-  const objects=ref<MathObject[]>([]);
+  let objects:MathObject[]=[];
+  let animations:Animation[]=[];
+
+  function play(...anims:LazyAnimation[]){
+    const r=anims.map(a=>a());
+    return Promise.all(
+      r.map(anim=>
+        new Promise<void>(resolve=>{
+          anim.startTime=performance.now();
+          anim.resolve=resolve;
+          animations.push(anim);
+        })
+      ),
+    );
+  }
+
+  function tick(now:number){
+    animations.forEach((anim,index)=>{
+      const elapsed=now-anim.startTime;
+      const alpha=Math.min(elapsed/anim.duration,1);
+
+      anim.update(alpha);
+
+      if(alpha===1){
+        anim.resolve();
+        animations.splice(index,1);
+      }
+    });
+
+    updateScene();
+    requestAnimationFrame(tick);
+  }
+
+  function fadeIn(
+    object:MathObject,
+    duration:AnimationOptions=DEFAULT_ANIMATION_OPTIONS
+  ):LazyAnimation{
+    return ()=>{
+      object.
+      return{
+
+      };
+    };
+  }
 
   function init(){
     initSVG();
     initGroups();
     initScales();
     initArrowMarker();
+    startAnimationLoop();
+  }
+
+  function startAnimationLoop(){
+    requestAnimationFrame(tick);
   }
 
   function initScales(){
@@ -43,13 +92,15 @@ export default function(){
 
     theWidth.value=containerRef.value.clientWidth;
     theHeight.value=containerRef.value.clientHeight;
-    svgSelection.value=d3
+    svgSelection=d3
       .select(containerRef.value)
       .attr('viewBox',`0 0 ${theWidth.value} ${theHeight.value}`);
   }
 
   function initGroups(){
-    components.root=svgSelection.value!
+    if(!svgSelection)return;
+
+    components.root=svgSelection
       .append('g')
       .attr('class','root');
     components.points=components.root
@@ -64,9 +115,9 @@ export default function(){
   }
 
   function initArrowMarker(){
-    if(!svgSelection.value)return;
+    if(!svgSelection)return;
 
-    const defs=svgSelection.value.append('defs');
+    const defs=svgSelection.append('defs');
 
     defs
       .append('marker')
@@ -82,10 +133,10 @@ export default function(){
       .attr('fill','black');
   }
 
-  function renderPoints(){
+  function mountPoints(){
     if(!components.points)return;
 
-    const points=objects.value.filter(object=>object instanceof PointObject);
+    const points=objects.filter(object=>object instanceof PointObject);
     components.points
       .selectAll<SVGCircleElement,PointObject>('circle')
       .data(points,p=>p.id)
@@ -97,10 +148,10 @@ export default function(){
       .attr('cy',p=>currentYScale(p.at.y));
   }
 
-  function renderVectors(){
+  function mountVectors(){
     if(!components.vectors)return;
 
-    const vectors=objects.value.filter(object=>object instanceof VectorObject);
+    const vectors=objects.filter(object=>object instanceof VectorObject);
     components.vectors
       .selectAll<SVGLineElement,VectorObject>('line')
       .data(vectors,v=>v.id)
@@ -115,14 +166,14 @@ export default function(){
       .attr('y2',v=>currentYScale(v.to.y));
   }
 
-  function renderFunctions(){
+  function mountFunctions(){
     if(!components.functions)return;
 
     const path=d3
       .line<Point>()
       .x(p=>currentXScale(p.x))
       .y(p=>currentYScale(p.y));
-    const functions=objects.value.filter(object=>object instanceof AbstractFunctionObject);
+    const functions=objects.filter(object=>object instanceof AbstractFunctionObject);
     components.functions
       .selectAll<SVGPathElement,AbstractFunctionObject>('path')
       .data(functions,f=>f.id)
@@ -134,28 +185,46 @@ export default function(){
       .attr('d',f=>path(f.points));
   }
 
-  function render(){
-    renderPoints();
-    renderVectors();
-    renderFunctions();
+  function mountAll(){
+    mountPoints();
+    mountVectors();
+    mountFunctions();
+  }
+
+  function updatePoints(){
+    if(!components.points)return;
+    components.points
+      .selectAll<SVGCircleElement, PointObject>('circle')
+      .attr('cx', p => currentXScale(p.at.x))
+      .attr('cy', p => currentYScale(p.at.y));
+  }
+
+  function updateVectors(){}
+
+  function updateFunctions(){}
+
+  function updateScene(){
+    updatePoints();
+    updateVectors();
+    updateFunctions();
   }
 
   function add(object:MathObject){
-    objects.value.push(object);
-    render();
+    objects.push(object);
+    mountAll();
   }
 
   function remove(object:MathObject){
     if(!components.root)return;
 
-    objects.value=objects.value.filter(o=>o.id!==object.id);
+    objects=objects.filter(o=>o.id!==object.id);
     components.root
       .selectAll(`[data-id="${object.id}"]`)
       .remove();
   }
 
   function clear(){
-    objects.value=[];
+    objects=[];
 
     if(components.points)
       components.points
@@ -178,9 +247,10 @@ export default function(){
     add,
     remove,
     clear,
+    play,
+    fadeIn,
   };
 }
 
-// to do later
 // group math objects
 // add lerp function
