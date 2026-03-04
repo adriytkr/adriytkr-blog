@@ -32,8 +32,13 @@ const theFunction=new LinearFunctionObject(3,0,1,[0,3],100);
 async function begin(){
   if(!graphRef.value)return;
 
+  graphRef.value.add(thePoint);
+  graphRef.value.add(theVector);
+  graphRef.value.add(theFunction);
   await graphRef.value.play(
+    graphRef.value.animate.fadeIn(thePoint),
     graphRef.value.animate.fadeIn(theVector),
+    graphRef.value.animate.fadeIn(theFunction),
   );
   // graphRef.value.add(theVector); // this adds immediately on the scene
   // graphRef.value.add(thePoint); // this adds immediately on the scene
@@ -52,7 +57,14 @@ async function begin(){
 async function remove(){
   if(!graphRef.value)return;
 
+  await graphRef.value.play(
+    graphRef.value.animate.fadeOut(theVector),
+  );
   graphRef.value.remove(theVector);
+  await graphRef.value.play(
+    graphRef.value.animate.fadeOut(theFunction),
+  );
+  graphRef.value.remove(theFunction);
 }
 
 async function clear(){
@@ -62,10 +74,16 @@ async function clear(){
 }
 
 async function update(){
+  if(!graphRef.value)return;
+
+  await graphRef.value.play(
+    graphRef.value.animate.shift(thePoint,{x:1,y:1}),
+    graphRef.value.animate.shift(theVector,{x:-1,y:0}),
+  );
   // what if the user alters the value of the slope of a linear function
   // I want the line to go to the point with an animation (maybe I could use lerp)
   // but sometimes I want the line to alter instanteneously (in the next tick)
-  theFunction.setParameters(3,2);
+  // theFunction.setParameters(3,2);
   // graphRef.value.updateScene();
 
   // // or if I wanted to change parameters smoothly (interpolation)

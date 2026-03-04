@@ -1,7 +1,7 @@
 import { MathObject, type MathObjectType } from '~/shared/types/math/math-objects/bases';
 import type {Matrix2x2} from '~/shared/types/math/basic';
 
-export class PointObject extends MathObject{
+export class PointObject extends MathObject implements Shiftable{
   public readonly type:MathObjectType='point';
   public at:Point;
   public size:number;

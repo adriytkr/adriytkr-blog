@@ -6,6 +6,8 @@ const {
   clear,
   play,
   fadeIn,
+  fadeOut,
+  shift,
 }=useGraphEngine();
 
 const api:GraphAPI={
@@ -15,6 +17,8 @@ const api:GraphAPI={
   play,
   animate:{
     fadeIn,
+    fadeOut,
+    shift,
   },
 };
 defineExpose(api);

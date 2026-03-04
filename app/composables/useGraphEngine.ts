@@ -1,6 +1,7 @@
 import { AbstractFunctionObject } from '~/shared/types/math/math-objects/AbstractFunctionObject';
 import type { MathObject } from '~/shared/types/math/math-objects/bases';
-import type { Animation, AnimationOptions, LazyAnimation } from '~/shared/types/math/engine/api';
+import type { Animation, AnimationOptions, LazyAnimation, ObjectStyle } from '~/shared/types/math/engine/api';
+import type { Shiftable } from '~/shared/types/math/math-objects/interfaces';
 
 import * as d3 from 'd3';
 
@@ -18,6 +19,7 @@ export default function(){
 
   let objects:MathObject[]=[];
   let animations:Animation[]=[];
+  let objectStyles=new WeakMap<MathObject,ObjectStyle>();
 
   function play(...anims:LazyAnimation[]){
     const r=anims.map(a=>a());
@@ -51,12 +53,60 @@ export default function(){
 
   function fadeIn(
     object:MathObject,
-    duration:AnimationOptions=DEFAULT_ANIMATION_OPTIONS
+    options:AnimationOptions=DEFAULT_ANIMATION_OPTIONS
   ):LazyAnimation{
-    return ()=>{
-      object.
+    return ():Animation=>{
+      const objectStyle=getObjectStyle(object);
+      objectStyle.opacity=0;
       return{
+        duration:options.duration,
+        update(alpha:number){
+          objectStyle.opacity=alpha;
+        },
+        resolve(){},
+        startTime:0,
+      };
+    };
+  }
 
+  function fadeOut(
+    object:MathObject,
+    options:AnimationOptions=DEFAULT_ANIMATION_OPTIONS,
+  ):LazyAnimation{
+    return ():Animation=>{
+      const objectStyle=getObjectStyle(object);
+      objectStyle.opacity=1;
+      return{
+        duration:options.duration,
+        update(alpha:number){
+          objectStyle.opacity=1-alpha;
+        },
+        resolve(){},
+        startTime:0,
+      };
+    };
+  }
+
+  function shift(
+    object:Shiftable,
+    delta:Point,
+    options:AnimationOptions=DEFAULT_ANIMATION_OPTIONS,
+  ):LazyAnimation{
+    return ():Animation=>{
+      let lastAlpha=0;
+      return{
+        duration:options.duration,
+        update(alpha:number){
+          const changeInAlpha=alpha-lastAlpha;
+          const incrementalDelta:Point={
+            x:delta.x*changeInAlpha,
+            y:delta.y*changeInAlpha,
+          };
+          object.shift(incrementalDelta);
+          lastAlpha=alpha;
+        },
+        resolve(){},
+        startTime:0,
       };
     };
   }
@@ -142,8 +192,10 @@ export default function(){
       .data(points,p=>p.id)
       .join('circle')
       .attr('data-id',p=>p.id)
+      .attr('class','point')
       .attr('r',p=>p.size)
       .attr('fill','black')
+      .style('opacity',p=>getObjectStyle(p).opacity)
       .attr('cx',p=>currentXScale(p.at.x))
       .attr('cy',p=>currentYScale(p.at.y));
   }
@@ -157,9 +209,11 @@ export default function(){
       .data(vectors,v=>v.id)
       .join('line')
       .attr('data-id',v=>v.id)
+      .attr('class','vector')
       .attr('stroke','black')
       .attr('stroke-width',3)
       .attr('marker-end','url(#arrow)')
+      .style('opacity',v=>getObjectStyle(v).opacity)
       .attr('x1',v=>currentXScale(v.from.x))
       .attr('y1',v=>currentYScale(v.from.y))
       .attr('x2',v=>currentXScale(v.to.x))
@@ -179,6 +233,7 @@ export default function(){
       .data(functions,f=>f.id)
       .join('path')
       .attr('data-id',f=>f.id)
+      .attr('class','function')
       .attr('fill','none')
       .attr('stroke','black')
       .attr('stroke-width',2)
@@ -194,14 +249,34 @@ export default function(){
   function updatePoints(){
     if(!components.points)return;
     components.points
-      .selectAll<SVGCircleElement, PointObject>('circle')
-      .attr('cx', p => currentXScale(p.at.x))
-      .attr('cy', p => currentYScale(p.at.y));
+      .selectAll<SVGCircleElement, PointObject>('.point')
+      .style('opacity',p=>getObjectStyle(p).opacity)
+      .attr('cx',p=>currentXScale(p.at.x))
+      .attr('cy',p=>currentYScale(p.at.y));
   }
 
-  function updateVectors(){}
+  function updateVectors(){
+    if(!components.vectors)return;
+    components.vectors
+      .selectAll<SVGLineElement,VectorObject>('.vector')
+      .style('opacity',v=>getObjectStyle(v).opacity)
+      .attr('x1',v=>currentXScale(v.from.x))
+      .attr('y1',v=>currentYScale(v.from.y))
+      .attr('x2',v=>currentXScale(v.to.x))
+      .attr('y2',v=>currentYScale(v.to.y));
+  }
 
-  function updateFunctions(){}
+  function updateFunctions(){
+    if(!components.functions)return;
+    const path=d3
+      .line<Point>()
+      .x(p=>currentXScale(p.x))
+      .y(p=>currentYScale(p.y));
+    components.functions
+      .selectAll<SVGPathElement,AbstractFunctionObject>('.function')
+      .style('opacity',f=>getObjectStyle(f).opacity)
+      .attr('d',f=>path(f.points));
+  }
 
   function updateScene(){
     updatePoints();
@@ -209,8 +284,18 @@ export default function(){
     updateFunctions();
   }
 
+  function getObjectStyle(object:MathObject){
+    let style=objectStyles.get(object);
+    if(!style){
+      style={opacity:1};
+      objectStyles.set(object,{opacity:1});
+    }
+    return style;
+  };
+
   function add(object:MathObject){
     objects.push(object);
+    objectStyles.set(object,{opacity:1});
     mountAll();
   }
 
@@ -249,6 +334,8 @@ export default function(){
     clear,
     play,
     fadeIn,
+    fadeOut,
+    shift,
   };
 }
 
