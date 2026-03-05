@@ -1,16 +1,16 @@
 import type { BaseRenderer } from './BaseRenderer';
 
-export class SceneNode<T,TStyle>{
+export class SceneNode<TData,TStyle,TSurface,TContext>{
   public id:number;
-  public data:T;
+  public data:TData;
   public style:TStyle;
-  public renderer:BaseRenderer<T>;
+  public renderer:BaseRenderer<TData,TStyle,TSurface,TContext>;
 
   public constructor(
     id:number,
-    data:T,
+    data:TData,
     style:TStyle,
-    renderer:BaseRenderer<T>,
+    renderer:BaseRenderer<TData,TStyle,TSurface,TContext>,
   ){
     this.id=id;
     this.data=data;

@@ -1,7 +1,6 @@
-import type { RenderContext } from './core';
 import type { AnimationOptions } from './types';
 
-export abstract class BaseAnimation{
+export abstract class BaseAnimation<TContext>{
   public startTime:number=0;
   public duration:number;
 
@@ -10,6 +9,6 @@ export abstract class BaseAnimation{
   }
 
   abstract setup():void;
-  abstract update(alpha:number,context:RenderContext):void;
+  abstract update(alpha:number,context:TContext):void;
   abstract resolve():void;
 }

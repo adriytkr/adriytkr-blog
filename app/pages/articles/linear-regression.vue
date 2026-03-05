@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import { CameraObject } from '@engines/2d/core/CameraObject';
 import { GraphAPI2D } from '@engines/2d/GraphAPI2D';
-import { SceneNode } from '@engines/2d/core/SceneNode';
-import { FadeInAnimation } from '@engines/2d/library/animations';
-import { FunctionRenderer } from '@engines/2d/library/renderers';
+
+import { CameraObject } from '@engines/2d/core/CameraObject';
 import type { AbstractFunctionObject } from '@math-objects/functions/AbstractFunctionObject';
-import type { HasOpacity } from '@engines/2d/library/animations/types';
+
+import { SceneNode } from '~/engines/shared/core/SceneNode';
+
+import { FadeInAnimation } from '@engines/2d/library/animations';
+import type { HasOpacity } from '@engines/2d/library/animations/';
+
+import { FunctionRenderer } from '@engines/2d/library/renderers';
+
+import type { RenderContext2D } from '@engines/2d/core/core';
+import { SceneNode2D } from '~/engines/2d/core/SceneNode2D';
 
 const SLUG='linear-regression';
 const sections:string[]=[
@@ -35,14 +42,22 @@ onMounted(()=>{
 
 const camera=new CameraObject([-3,3],[-3,3]);
 
-const node=new SceneNode<AbstractFunctionObject,HasOpacity>(
+const node=new SceneNode2D<
+  AbstractFunctionObject,
+  HasOpacity
+>
+(
   1,
   new LinearFunctionObject(3,1,5,[-3,3]),
   {opacity:1},
   new FunctionRenderer(),
 );
 
-const node2=new SceneNode<AbstractFunctionObject,HasOpacity>(
+const node2=new SceneNode2D<
+  AbstractFunctionObject,
+  HasOpacity
+>
+(
   1,
   new QuadraticFunctionObject(2,3,1,100),
   {opacity:1},

@@ -1,8 +1,7 @@
-import type { BaseAnimation } from './BaseAnimation';
-import type { MathObject } from '@math-objects';
-
+import type { BaseAnimation } from '@engines/shared/core/BaseAnimation';
+import type { SceneNode } from '@engines/shared/core/SceneNode';
 import { Engine2D } from './Engine2D';
-import type { SceneNode } from './SceneNode';
+import type { RenderContext2D } from './core';
 
 export class GraphAPI2D{
   private m_engine:Engine2D|null=null;
@@ -23,12 +22,16 @@ export class GraphAPI2D{
     this.m_engine.startAnimationLoop();
   }
 
-  public add=<T extends MathObject>(node:SceneNode<T>|CameraObject)=>{
+  public add(
+    node:SceneNode<any,any,d3.Selection<SVGGElement,unknown,null,undefined>,RenderContext2D>|CameraObject
+  ){
     if(!this.m_engine) throw Error('Engine is unmounted');
     this.m_engine.add(node);
   }
 
-  public remove=<T extends MathObject>(node:SceneNode<T>)=>{
+  public remove(
+    node:SceneNode<any,any,d3.Selection<SVGGElement,unknown,null,undefined>,RenderContext2D>
+  ){
     if(!this.m_engine)return;
     this.m_engine.remove(node);
   }
@@ -38,7 +41,7 @@ export class GraphAPI2D{
     this.m_engine.clear();
   }
 
-  public play(...animations:BaseAnimation[]):Promise<void[]>{
+  public play(...animations:BaseAnimation<RenderContext2D>[]):Promise<void[]>{
     if(!this.m_engine)return Promise.resolve([]);
     return this.m_engine.play(...animations);
   }

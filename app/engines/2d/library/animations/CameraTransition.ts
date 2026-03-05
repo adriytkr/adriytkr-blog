@@ -1,6 +1,6 @@
-import { BaseAnimation } from '@engines/2d/core/BaseAnimation';
+import { BaseAnimation } from '~/engines/shared/core/BaseAnimation';
 import type { CameraObject } from '@math-objects';
-import type { AnimationOptions } from '@engines/2d/core/types';
+import type { AnimationOptions } from '~/engines/shared/core/types';
 import type { Interval } from '@math/basic/index';
 import { DEFAULT_ANIMATION_OPTIONS } from './constants';
 

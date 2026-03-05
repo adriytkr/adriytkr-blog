@@ -1,19 +1,19 @@
 import type { CameraObject,AbstractFunctionObject } from '@math-objects';
 import type { Point,Interval } from '~/shared/types/math/basic';
-import { BaseRenderer } from '@engines/2d/core/BaseRenderer';
-import type { RenderContext } from '@engines/2d/core/core';
-import { SceneNode } from '@engines/2d/core/SceneNode';
+import type { RenderContext2D } from '@engines/2d/core/core';
+import { BaseRenderer2D } from '@engines/2d/core/BaseRenderer2D';
+import type { SceneNode2D } from '@engines/2d/core/SceneNode2D';
 
 import * as d3 from 'd3';
 
-export class FunctionRenderer extends BaseRenderer<AbstractFunctionObject>{
+export class FunctionRenderer extends BaseRenderer2D<AbstractFunctionObject,any>{
   public override get layerName(){
     return 'function';
   }
 
   public override render(
-    functions:SceneNode<AbstractFunctionObject>[],
-    context:RenderContext,
+    functions:SceneNode2D<AbstractFunctionObject,any>[],
+    context:RenderContext2D,
   ){
     if(!this.m_group)return;
 
@@ -25,7 +25,7 @@ export class FunctionRenderer extends BaseRenderer<AbstractFunctionObject>{
       .y(p=>yScale(p.y));
 
     this.m_group
-      .selectAll<SVGPathElement,SceneNode<AbstractFunctionObject>>('path.function')
+      .selectAll<SVGPathElement,SceneNode2D<AbstractFunctionObject,any>>('path.function')
       .data(functions,f=>f.id)
       .join(
         enter=>

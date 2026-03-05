@@ -1,6 +1,6 @@
-import { BaseAnimation } from '@engines/2d/core/BaseAnimation';
-import type { AnimationOptions } from '@engines/2d/core/types';
-import type { SceneNode } from '@engines/2d/core/SceneNode';
+import { BaseAnimation } from '~/engines/shared/core/BaseAnimation';
+import type { AnimationOptions } from '~/engines/shared/core/types';
+import type { SceneNode } from '~/engines/shared/core/SceneNode';
 import { DEFAULT_ANIMATION_OPTIONS } from './constants';
 import type { HasOpacity } from './types';
 

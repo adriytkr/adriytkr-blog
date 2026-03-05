@@ -1,11 +1,11 @@
-import { BaseRenderer } from '@engines/2d/core/BaseRenderer';
-import type { RenderContext } from '@engines/2d/core/core';
+import type { RenderContext2D } from '@engines/2d/core/core';
 import type { VectorObject } from '@math-objects';
-import { SceneNode } from '@engines/2d/core/SceneNode';
+import { BaseRenderer2D } from '@engines/2d/core/BaseRenderer2D';
+import type { SceneNode2D } from '@engines/2d/core/SceneNode2D';
 
 import * as d3 from 'd3';
 
-export class VectorRenderer extends BaseRenderer<VectorObject>{
+export class VectorRenderer extends BaseRenderer2D<VectorObject,any>{
   public override get layerName(){
     return 'vector';
   }
@@ -41,15 +41,15 @@ export class VectorRenderer extends BaseRenderer<VectorObject>{
   }
 
   public override render(
-    vectors:SceneNode<VectorObject>[],
-    context:RenderContext,
+    vectors:SceneNode2D<VectorObject,any>[],
+    context:RenderContext2D,
   ){
     if(!this.m_group)return;
 
     const {xScale,yScale}=context;
 
     this.m_group
-      .selectAll<SVGLineElement,SceneNode<VectorObject>>('line.vector')
+      .selectAll<SVGLineElement,SceneNode2D<VectorObject,any>>('line.vector')
       .data(vectors,v=>v.id)
       .join(
         enter=>
