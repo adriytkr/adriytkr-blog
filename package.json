@@ -2,6 +2,9 @@
   "name": "adriytkr-blog",
   "type": "module",
   "private": true,
+  "workspaces":[
+    "packages/engine/"
+  ],
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -22,7 +25,8 @@
     "nuxt": "^4.3.1",
     "three": "^0.183.1",
     "vue": "^3.5.28",
-    "vue-router": "^4.6.4"
+    "vue-router": "^4.6.4",
+    "@adriytkr/engine":"*"
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",

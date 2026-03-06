@@ -1,0 +1,7 @@
+{
+  "name":"@adriytkr/engine",
+  "version":"1.0.0",
+  "exports":{
+    "./*":"./src/*.js"
+  }
+}
