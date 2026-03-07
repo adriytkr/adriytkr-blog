@@ -16,8 +16,14 @@
     }
   ],
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
-      "@adriytkr/engine/*":["./packages/engine/src/*"]
+      "@adriytkr/std": ["packages/std/src/index.ts"],
+      "@adriytkr/std/*": ["packages/std/src/*.ts"],
+      "@adriytkr/engine": ["packages/engine/src/index.ts"],
+      "@adriytkr/engine/*": ["packages/engine/src/*.ts"],
+      "@adriytkr/renderer-d3": ["packages/renderer-d3/src/index.ts"],
+      "@adriytkr/renderer-d3/*": ["packages/renderer-d3/src/*.ts"]
     }
   }
 }

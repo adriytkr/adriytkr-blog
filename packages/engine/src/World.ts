@@ -8,7 +8,7 @@ export class World{
   private m_entities:Set<Entity>=new Set();
   private m_stores:Map<string,SparseSet<any>>=new Map();
 
-  public createEntity():number{
+  public createEntity():Entity{
     const entity:Entity=this.m_nextEntityId++;
     this.m_entities.add(entity);
     return entity;
@@ -23,13 +23,14 @@ export class World{
     this.m_entities.delete(entity);
   }
 
-  public addComponent<T extends Component>(entity:Entity,component:T){
+  public addComponent<T extends Component>(entity:Entity,component:T):T{
     const componentName=component.constructor.name;
     if(!this.m_stores.has(componentName))
       this.m_stores.set(componentName,new SparseSet<T>());
 
     const store=this.m_stores.get(componentName)!;
     store.add(entity,component);
+    return component;
   }
 
   public getComponent<T extends Component>(

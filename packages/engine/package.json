@@ -1,7 +1,9 @@
 {
   "name":"@adriytkr/engine",
   "version":"1.0.0",
+  "type":"module",
   "exports":{
-    "./*":"./src/*.js"
+    ".":"./src/index.ts",
+    "./*":"./src/*.ts"
   }
 }

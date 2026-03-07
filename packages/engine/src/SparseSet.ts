@@ -1,9 +1,9 @@
 import type { Entity } from './Entity';
 
 export class SparseSet<T>{
-  private m_sparse:number[]=[];
-  private m_dense:number[]=[];
-  private m_data:T[]=[];
+  private m_sparse:number[]=[];// entity -> index
+  private m_dense:number[]=[];// index->entity
+  private m_data:T[]=[];// index->data
   private m_count:number=0;
 
   public add(entity:Entity,component:T):void{
