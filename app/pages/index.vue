@@ -5,14 +5,14 @@ import {
   Transform,
   HierarchySystem,
   TransformSystem,
-  Camera2D,
   Velocity,
   PhysicsSystem,
   AnimationSystem,
   AnimationGroup,
   Alpha,
-} from '@adriytkr/std'
-import { PixiRendererSystem,PixiRenderable } from '@adriytkr/renderer-pixi';
+  SystemManager,
+} from '@adriytkr/std';
+import { PixiRendererSystem,PixiRenderable } from '@adriytkr/math';
 
 import * as PIXI from 'pixi.js';
 
@@ -20,10 +20,12 @@ const canvasRef=ref<HTMLCanvasElement|null>(null);
 
 const world=new World();
 
-const physicsSystem=new PhysicsSystem(3);
-const hierarchySystem=new HierarchySystem();
-const transformSystem=new TransformSystem();
-const animationSystem=new AnimationSystem();
+const systemManager=new SystemManager();
+
+systemManager.add(new PhysicsSystem());
+systemManager.add(new HierarchySystem());
+systemManager.add(new TransformSystem());
+systemManager.add(new AnimationSystem());
 let renderSystem:PixiRendererSystem;
 
 const circle=world.createEntity();
@@ -53,14 +55,11 @@ let lastTime=0;
 let frameId:number|null=null;
 
 function gameLoop(currentTime:number){
-  const dt=(currentTime-lastTime)/1000;
+  const delta=(currentTime-lastTime)/1000;
   lastTime=currentTime;
 
-  hierarchySystem.update(world,dt);
-  physicsSystem.update(world,dt);
-  transformSystem.update(world,dt);
-  animationSystem.update(world,dt);
-  renderSystem.update(world,dt);
+  systemManager.update(world,delta);
+  renderSystem.update(world,delta);
 
   frameId=requestAnimationFrame(gameLoop);
 }

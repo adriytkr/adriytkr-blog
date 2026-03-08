@@ -18,12 +18,14 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@adriytkr/std": ["packages/std/src/index.ts"],
-      "@adriytkr/std/*": ["packages/std/src/*.ts"],
       "@adriytkr/engine": ["packages/engine/src/index.ts"],
       "@adriytkr/engine/*": ["packages/engine/src/*.ts"],
-      "@adriytkr/renderer-pixi": ["packages/renderer-pixi/src/index.ts"],
-      "@adriytkr/renderer-pixi/*": ["packages/renderer-pixi/src/*.ts"]
+
+      "@adriytkr/std": ["packages/std/src/index.ts"],
+      "@adriytkr/std/*": ["packages/std/src/*.ts"],
+
+      "@adriytkr/math": ["packages/math/src/index.ts"],
+      "@adriytkr/math/*": ["packages/math/src/*.ts"]
     }
   }
 }

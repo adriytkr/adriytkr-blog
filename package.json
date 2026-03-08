@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@adriytkr/engine": "*",
-    "@adriytkr/renderer-pixi": "*",
+    "@adriytkr/math": "*",
     "@adriytkr/std": "*",
     "@nuxt/content": "^3.12.0",
     "@nuxt/fonts": "^0.14.0",
