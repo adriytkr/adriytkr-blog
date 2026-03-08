@@ -5,112 +5,81 @@ import {
   Transform,
   HierarchySystem,
   TransformSystem,
-  Velocity,
-  PhysicsSystem,
   AnimationSystem,
   AnimationGroup,
   Alpha,
   SystemManager,
+  MathCanvas,
+  MathPosition,
+  Camera2D,
+  MathPoint,
+  PointRenderSystem,
+  Renderable,
+  PixiRendererSystem,
+  ActiveCameraTag,
 } from '@adriytkr/std';
-import { PixiRendererSystem,PixiRenderable } from '@adriytkr/math';
 
 import * as PIXI from 'pixi.js';
 
 const canvasRef=ref<HTMLCanvasElement|null>(null);
-
 const world=new World();
-
 const systemManager=new SystemManager();
-
-systemManager.add(new PhysicsSystem());
-systemManager.add(new HierarchySystem());
-systemManager.add(new TransformSystem());
-systemManager.add(new AnimationSystem());
-let renderSystem:PixiRendererSystem;
-
-const circle=world.createEntity();
-world.addComponent(circle,new Hierarchy());
-const circlePosition=world.addComponent(circle,new Transform());
-circlePosition.localPosition={x:200,y:30,z:0};
-world.addComponent(circle,new Velocity(30,0,0));
-world.addComponent(circle,new Alpha(1));
-const circleGraphics=new PIXI.Graphics()
-  .circle(0,0,20)
-  .fill(0xff0000);
-world.addComponent(circle,new PixiRenderable(circleGraphics,c=>{
-  const alpha=world.getComponent(circle,Alpha)!;
-  circleGraphics.alpha=alpha.value;
-}));
-
-const square=world.createEntity();
-world.addComponent(square,new Hierarchy(circle));
-const squarePosition=world.addComponent(square,new Transform());
-squarePosition.localPosition.y+=30;
-const squareGraphics=new PIXI.Graphics()
-  .rect(0,0,20,20)
-  .fill('red');
-// world.addComponent(square,new PixiRenderable(squareGraphics));
 
 let lastTime=0;
 let frameId:number|null=null;
+let renderer:PIXI.Renderer|null=null;
 
 function gameLoop(currentTime:number){
   const delta=(currentTime-lastTime)/1000;
   lastTime=currentTime;
 
   systemManager.update(world,delta);
-  renderSystem.update(world,delta);
 
   frameId=requestAnimationFrame(gameLoop);
 }
 
 onMounted(async()=>{
   if(!canvasRef.value)return;
-  renderSystem=new PixiRendererSystem();
-  await renderSystem.init(canvasRef.value);
+
+  renderer=await PIXI.autoDetectRenderer({
+    view:canvasRef.value,
+    width:500,
+    height:500,
+    resolution:window.devicePixelRatio||1,
+    autoDensity:true,
+    backgroundColor:0xeeeeee,
+  }) as PIXI.Renderer;
+
+  // systemManager.add(new HierarchySystem());
+  // systemManager.add(new TransformSystem());
+  // systemManager.add(new AnimationSystem());
+  systemManager.add(new PointRenderSystem());
+  systemManager.add(new PixiRendererSystem(renderer));
+
+  const canvas=world.createEntity();
+  world.addComponent(canvas,new MathCanvas(50,{x:0,y:0}));
+
+  const point=world.createEntity();
+  world.addComponent(point,new MathPosition(0,0,canvas));
+  world.addComponent(point,new MathPoint(10));
+  world.addComponent(point,new Transform());
+  world.addComponent(point,new Renderable(new PIXI.Graphics()));
+
+  const camera=world.createEntity();
+  world.addComponent(camera,new Camera2D(0,0));
+  world.addComponent(camera,new ActiveCameraTag());
 
   frameId=requestAnimationFrame(gameLoop);
 });
 
 onUnmounted(()=>{
   if(frameId)cancelAnimationFrame(frameId);
-  renderSystem.dispose();
 });
-
-function fadeIn(){
-  const alpha=world.getComponent(circle,Alpha)!;
-
-  world.addComponent(circle,new AnimationGroup([
-    {
-      elapsed:0,
-      duration:3,
-      set(alp){
-        alpha.value=alp;
-      }
-    }
-  ]));
-}
-
-function fadeOut(){
-  const alpha=world.getComponent(circle,Alpha)!;
-
-  world.addComponent(circle,new AnimationGroup([
-    {
-      elapsed:0,
-      duration:3,
-      set(alp){
-        alpha.value=1-alp;
-      }
-    }
-  ]));
-}
 </script>
 
 <template>
   <h1>Hello, World!</h1>
   <canvas ref="canvasRef"></canvas>
-  <button @click="fadeIn">Fade In</button>
-  <button @click="fadeOut">Fade Out</button>
 </template>
 
 <style scoped>
