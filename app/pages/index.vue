@@ -1,29 +1,25 @@
 <script setup lang="ts">
-import { World } from '@adriytkr/engine';
+import { World,SystemManager } from '@adriytkr/engine';
 import type { Entity } from '@adriytkr/engine';
 
 import { Camera2D } from '@adriytkr/std/2d/index';
+
 import {
   AnimationGroup,
   AnimationSystem,
-  create2DCamera,
-  createFunc,
-  createGrid,
-  createCircle,
-  createPolygon,
-  createRectangle,
-  createSquare,
-  createStandardAxes,
-  createVector,
-  Hierarchy,
   Renderable,
-  RendererSystem,
-  SystemManager,
   Transform,
   TransformSystem,
-  createPentagon,
+  create2DCamera,
 } from '@adriytkr/std';
-import { shiftAnimation } from '@adriytkr/std';
+
+import {
+  createArc,
+  createGrid,
+  createStandardAxes,
+} from '@adriytkr/math';
+
+import { PixiRendererSystem } from '@adriytkr/pixi-renderer-2d';
 
 import * as PIXI from 'pixi.js';
 
@@ -64,7 +60,7 @@ onMounted(async()=>{
     autoDensity:true,
   });
 
-  systemManager.add(new RendererSystem(renderer));
+  systemManager.add(new PixiRendererSystem(renderer));
 
   camera=create2DCamera(
     world,
@@ -76,67 +72,19 @@ onMounted(async()=>{
         height:canvas.height,
       },
     },
-    {},
   );
 
-  square=createSquare(
+  const arc=createArc(
     world,
     {
       position:{x:0,y:0,z:0},
-      size:1,
+      radius:2,
+      startAngle:0,
+      endAngle:Math.PI/3,
     },
   );
-
-  const rectangle=createRectangle(
-    world,
-    {
-      position:{x:-3,y:-1,z:0},
-      width:2,
-      height:1,
-    },
-  );
-
-  const pentagon=createPentagon(
-    world,
-    {
-      position:{x:0,y:0,z:0},
-      sideLength:3,
-    },
-  );
-
-  const vector=createVector(
-    world,
-    {
-      from:{x:0,y:0,z:0},
-      to:{x:2,y:2,z:0},
-    },
-    {
-      color:'blue',
-    },
-  );
-
-  world.addComponent(vector.entity,new Hierarchy(square.entity));
-  const x=world.addComponent(square.entity,new Hierarchy());
-  x.children.add(vector.entity);
-
-  const func=createFunc(
-    world,
-    {
-      fn:x=>x**2,
-      domain:[-3,3],
-      samples:100,
-    },
-  );
-
-  const axes=createStandardAxes(
-    world,
-    {},
-  );
-
-  const grid=createGrid(
-    world,
-    {},
-  );
+  const axes=createStandardAxes(world,{});
+  const grid=createGrid(world,{});
 
   let lastTime=performance.now();
   function loop(time:number){
@@ -154,15 +102,7 @@ onMounted(async()=>{
   canvas.addEventListener('mousemove',handleMouseMove);
 });
 
-function animate(){
-  const squareAnimationGroup=world.addComponent(square.entity,new AnimationGroup());
-
-  squareAnimationGroup.addTrack(shiftAnimation(
-    2,
-    square.transform,
-    {x:2,y:2,z:0},
-  ));
-}
+function animate(){}
 
 let isDragging=false;
 let lastMouse={x:0,y:0};

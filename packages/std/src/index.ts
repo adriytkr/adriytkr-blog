@@ -1,7 +1,5 @@
-export * from './common/components/';
-export * from './common/systems/';
+export * from './common/';
+export * from './2d/';
+// export * from './3d/';
 
-export * from './2d';
-
-export * from './utils';
 export * from './types';

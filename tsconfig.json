@@ -25,7 +25,10 @@
       "@adriytkr/std/*": ["packages/std/src/*.ts"],
 
       "@adriytkr/math": ["packages/math/src/index.ts"],
-      "@adriytkr/math/*": ["packages/math/src/*.ts"]
+      "@adriytkr/math/*": ["packages/math/src/*.ts"],
+
+      "@adriytkr/pixi-renderer-2d": ["packages/pixi-renderer-2d/src/index.ts"],
+      "@adriytkr/pixi-renderer-2d/*": ["packages/pixi-renderer-2d/src/*.ts"]
     }
   }
 }

@@ -1,7 +1,7 @@
-export * from './Entity';
-export * from './Component';
-export * from './System';
+export * from './world/';
 
-export * from './World';
+export * from './entity/';
+export * from './component/';
+export * from './systems/';
 
-export * from './SparseSet';
+export * from './storage/';

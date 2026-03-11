@@ -16,6 +16,7 @@
     "@adriytkr/engine": "*",
     "@adriytkr/math": "*",
     "@adriytkr/std": "*",
+    "@adriytkr/pixi-renderer-2d": "*",
     "@nuxt/content": "^3.12.0",
     "@nuxt/fonts": "^0.14.0",
     "@nuxtjs/i18n": "^10.2.3",

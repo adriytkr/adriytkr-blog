@@ -8,15 +8,24 @@ export type PolylineCommand={
   style:{color:string};
 };
 
-export type PolyconCommand={
+export type PolygonCommand={
   type:'polygon';
   vertices:Point[];
   style:{stroke:string,fill:string};
 };
 
+export type ArcCommand={
+  type:'arc';
+  radius:number;
+  startAngle:number;
+  endAngle:number;
+  style:{stroke:string,fill:string};
+};
+
 export type DrawCommand=
   PolylineCommand|
-  PolyconCommand;
+  PolygonCommand|
+  ArcCommand;
 
 export class Renderable extends Component{
   public drawCommands:DrawCommand[]=[];
