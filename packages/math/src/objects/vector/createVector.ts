@@ -1,6 +1,5 @@
 import { World } from '@adriytkr/engine';
 import { Renderable, Transform } from '@adriytkr/std';
-import type { Point } from '@adriytkr/std';
 
 import type { VectorConfig,VectorStyle } from './types';
 

@@ -25,7 +25,7 @@ export function createRegularPolygon(
   if('radius' in config){
     radius=config.radius;
   }else{
-    radius=config.sideLength/(2*Math.sin(Math.PI/sides));
+    radius=config.sidelength/(2*Math.sin(Math.PI/sides));
   }
 
   const renderable=new Renderable();

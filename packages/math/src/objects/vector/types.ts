@@ -1,4 +1,5 @@
-import type { Point } from '@adritkr/std';
+import type { Point, Renderable, Transform } from '@adriytkr/std';
+import type { Entity } from '@adriytkr/engine';
 
 export interface VectorConfig{
   from:Point,

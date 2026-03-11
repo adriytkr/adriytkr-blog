@@ -7,7 +7,7 @@ export interface RegularPolygonConfigBase{
 }
 
 export interface RegularPolygonConfigWithSideLength extends RegularPolygonConfigBase{
-  sideLength:number,
+  sidelength:number,
 }
 
 export interface RegularPolygonConfigWithRadius extends RegularPolygonConfigBase{
