@@ -16,24 +16,28 @@ import {
   rotateAnimationTrack,
   shiftAnimationTrack,
   RendererSystem,
+  FunctionObject,
+  FunctionGeometrySystem,
+  ParametricFunctionObject,
+  ParametricFunctionGeometrySystem,
+  PolygonGeometry,
+  PolygonObject,
+  PolygonSystem,
+  RegularPolygonObject,
+  RegularPolygonSystem,
+  VectorGeometrySystem,
+  VectorObject,
+  ArcGeometry,
 } from '@adriytkr/std';
 
 import {
-  createArc,
   createGrid,
   createStandardAxes,
-  createVector,
-  createSquare,
-  createCircle,
-  createParametricFunction,
 } from '@adriytkr/math';
-
-import type { WorldObject } from '@adriytkr/math';
 
 import { PixiRendererAdapter } from '@adriytkr/pixi-renderer-2d';
 
 import * as PIXI from 'pixi.js';
-import { PixiRendererSystem } from '~~/packages/pixi-renderer-2d/src/PixiRendererSystem';
 
 const canvasRef=ref<HTMLCanvasElement|null>(null);
 
@@ -56,6 +60,12 @@ onMounted(async()=>{
 
   systemManager.add(new AnimationSystem());
   systemManager.add(new TransformSystem());
+
+  systemManager.add(new PolygonSystem());
+  systemManager.add(new RegularPolygonSystem());
+  systemManager.add(new FunctionGeometrySystem());
+  systemManager.add(new VectorGeometrySystem());
+  systemManager.add(new ParametricFunctionGeometrySystem());
 
   const renderer=await PIXI.autoDetectRenderer({
     canvas:canvasRef.value,
@@ -81,14 +91,51 @@ onMounted(async()=>{
     },
   );
 
-  const crazyLine=world.createEntity();
-  world.addComponent(crazyLine,new PolylineGeometry([
-    {x:1,y:1,z:0},
-    {x:1,y:0,z:0},
-    {x:2,y:1,z:0},
-  ]));
-  world.addComponent(crazyLine,new Transform());
-  world.addComponent(crazyLine,new Hierarchy());
+  const func=world.createEntity();
+  world.addComponent(func,new FunctionObject(
+    x=>x**2,
+    200,
+    [-3,3],
+  ));
+  world.addComponent(func,new Transform());
+  world.addComponent(func,new Hierarchy());
+
+  const func2=world.createEntity();
+  world.addComponent(func2,new ParametricFunctionObject(
+    t=>t**3,
+    t=>t*2,
+    [-3,3],
+    200,
+  ));
+  world.addComponent(func2,new Transform());
+  world.addComponent(func2,new Hierarchy());
+
+  const square=world.createEntity();
+  world.addComponent(square,new Transform());
+  world.addComponent(square,new Hierarchy());
+  world.addComponent(square,new RegularPolygonObject(6,1));
+
+  const vector=world.createEntity();
+  world.addComponent(square,new Transform());
+  world.addComponent(square,new Hierarchy());
+  world.addComponent(square,new VectorObject({x:1,y:3,z:0}));
+
+  const circle=world.createEntity();
+  world.addComponent(circle,new Transform());
+  world.addComponent(circle,new Hierarchy());
+  world.addComponent(circle,new ArcGeometry(2,0,Math.PI/2));
+  // world.addComponent(square,new PolygonObject([
+  //   {x:0,y:0,z:0},
+  //   {x:1,y:0,z:0},
+  //   {x:1,y:1,z:0},
+  //   {x:0,y:1,z:0},
+  // ]));
+  // world.addComponent(square,new PolygonGeometry([
+  //   {x:0,y:0,z:0},
+  //   {x:1,y:0,z:0},
+  //   {x:1,y:1,z:0},
+  //   {x:0,y:1,z:0},
+  // ]));
 
   let lastTime=performance.now();
   function loop(time:number){
