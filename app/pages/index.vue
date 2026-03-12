@@ -11,6 +11,19 @@ import {
   Transform,
   Hierarchy,
   Renderable,
+  FunctionGeometrySystem,
+  FunctionObject,
+  ParametricFunctionObject,
+  ParametricFunctionGeometrySystem,
+  PolygonObject,
+  RegularPolygonObject,
+  PolygonSystem,
+  RegularPolygonSystem,
+  VectorGeometrySystem,
+  VectorObject,
+  GridGeometrySystem,
+  GridObject,
+  DirtyTag,
 } from '@adriytkr/std';
 
 import { PixiRendererAdapter } from '@adriytkr/pixi-renderer-2d';
@@ -38,12 +51,18 @@ onMounted(async()=>{
   systemManager=new SystemManager();
 
   systemManager.add(new TransformSystem());
+  systemManager.add(new FunctionGeometrySystem());
+  systemManager.add(new ParametricFunctionGeometrySystem());
+  systemManager.add(new PolygonSystem());
+  systemManager.add(new RegularPolygonSystem());
+  systemManager.add(new VectorGeometrySystem());
+  systemManager.add(new GridGeometrySystem());
 
   const renderer=await PIXI.autoDetectRenderer({
     canvas:canvasRef.value,
     width:canvas.width,
     height:canvas.height,
-    resolution: window.devicePixelRatio,
+    resolution:window.devicePixelRatio,
     antialias:true,
     autoDensity:true,
   });
@@ -85,6 +104,66 @@ onMounted(async()=>{
     transform,
   });
   world.addComponent(lailah,renderable);
+  world.addComponent(lailah,new DirtyTag());
+
+  const func=world.createEntity();
+  world.addComponent(func,new Transform());
+  world.addComponent(func,new Hierarchy());
+  world.addComponent(func,new FunctionObject(
+    x=>x**2,
+    200,
+    [-3,3],
+  ));
+  world.addComponent(func,new Renderable());
+  world.addComponent(func,new DirtyTag());
+
+  const para=world.createEntity();
+  world.addComponent(para,new Transform());
+  world.addComponent(para,new Hierarchy());
+  world.addComponent(para,new ParametricFunctionObject(
+    t=>t+5,
+    t=>(t+5)**2,
+    [-3,3],
+    200,
+  ));
+  world.addComponent(para,new Renderable());
+  world.addComponent(para,new DirtyTag());
+
+  const polygon=world.createEntity();
+  world.addComponent(polygon,new Transform());
+  world.addComponent(polygon,new Hierarchy());
+  world.addComponent(polygon,new PolygonObject([
+    {x:0,y:0,z:0},
+    {x:1,y:1,z:0},
+    {x:2,y:1,z:0},
+    {x:2,y:0,z:0},
+  ]));
+  world.addComponent(polygon,new Renderable());
+  world.addComponent(polygon,new DirtyTag());
+
+  const pentagon=world.createEntity();
+  world.addComponent(pentagon,new Transform());
+  world.addComponent(pentagon,new Hierarchy());
+  world.addComponent(pentagon,new RegularPolygonObject(
+    5,
+    2,
+  ));
+  world.addComponent(pentagon,new Renderable());
+  world.addComponent(pentagon,new DirtyTag());
+
+  const vector=world.createEntity();
+  world.addComponent(vector,new Transform());
+  world.addComponent(vector,new Hierarchy());
+  world.addComponent(vector,new VectorObject({x:4,y:2,z:0}));
+  world.addComponent(vector,new Renderable());
+  world.addComponent(vector,new DirtyTag());
+
+  const grid=world.createEntity();
+  world.addComponent(grid,new Transform());
+  world.addComponent(grid,new Hierarchy());
+  world.addComponent(grid,new GridObject(-3,3,-3,3,1,1));
+  world.addComponent(grid,new Renderable());
+  world.addComponent(grid,new DirtyTag());
 
   let lastTime=performance.now();
   function loop(time:number){

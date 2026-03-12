@@ -1,12 +1,27 @@
 import type { ISystem, World } from '@adriytkr/engine';
-import { Transform } from '../components';
+import { DirtyTag, Renderable, Transform } from '../components';
 import { PolygonGeometry, PolylineGeometry } from '../geometry';
-import { VectorObject } from '../objects';
+import { DEFAULT_VECTOR_STYLE, VectorObject, VectorStyle } from '../objects';
+import type { PixiDrawCommand } from './CommandBuffer';
 
 export class VectorGeometrySystem implements ISystem{
   public update(world:World,delta:number):void{
-    for(const entity of world.query(Transform,VectorObject)){
+    for(const entity of world.query(DirtyTag,VectorObject,Renderable,Transform)){
+      console.log(entity);
+      const transform=world.getComponent(entity,Transform)!;
+      const renderable=world.getComponent(entity,Renderable)! as Renderable<PixiDrawCommand>;
       const vector=world.getComponent(entity,VectorObject)!;
+      const style=world.getComponent(entity,VectorStyle)??DEFAULT_VECTOR_STYLE;
+
+      renderable.primitives.push({
+        topology:'polyline',
+        geometry:{points:[{x:0,y:0,z:0},vector.to]},
+        style:{
+          stroke:style.lineStroke,
+          strokeWidth:style.lineStrokeWidth,
+        },
+        transform,
+      });
       world.addComponent(entity,new PolylineGeometry({
         points:[{x:0,y:0,z:0},vector.to],
       }));
@@ -21,7 +36,21 @@ export class VectorGeometrySystem implements ISystem{
       const py=ux*size;
       const base1={x:vector.to.x-ux*size+px,y:vector.to.y-uy*size+py,z:0};
       const base2={x:vector.to.x-ux*size-px,y:vector.to.y-uy*size-py,z:0};
-      world.addComponent(entity,new PolygonGeometry({vertices:[vector.to,base1,base2]}));
+
+      renderable.primitives.push({
+        topology:'polygon',
+        geometry:{
+          vertices:[vector.to,base1,base2]
+        },
+        style:{
+          fill:style.tipFill,
+          stroke:style.tipStroke,
+          strokeWidth:style.tipStrokeWidth,
+        },
+        transform,
+      });
+
+      world.removeComponent(entity,DirtyTag);
     }
   }
 }

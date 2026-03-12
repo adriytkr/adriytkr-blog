@@ -18,7 +18,20 @@ export type PolylineStyle={
 };
 export type PolylineDrawCommand=DrawCommand<PolylineTopology,PolylineGeometry,PolylineStyle>;
 
-export type PixiDrawCommand=PolylineDrawCommand;
+export type PolygonTopology='polygon';
+export type PolygonGeometry={
+  vertices:Point[];
+};
+export type PolygonStyle={
+  stroke:string;
+  strokeWidth:number;
+  fill:string;
+};
+export type PolygonDrawCommand=DrawCommand<PolygonTopology,PolygonGeometry,PolygonStyle>;
+
+export type PixiTopology=PolylineTopology|PolygonTopology;
+
+export type PixiDrawCommand=PolylineDrawCommand|PolygonDrawCommand;
 
 export class CommandBuffer<T extends DrawCommand<string,any,any>>{
   public commands:T[]=[];

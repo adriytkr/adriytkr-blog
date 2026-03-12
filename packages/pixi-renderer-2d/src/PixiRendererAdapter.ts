@@ -3,16 +3,17 @@ import { ArcGeometry, Camera2D, PolygonGeometry, PolylineGeometry, Transform } f
 import type { Geometry, IRendererAdapter } from '@adriytkr/std';
 
 import * as PIXI from 'pixi.js';
-import type { CommandBuffer, DrawCommand } from '~~/packages/std/src/common/systems/CommandBuffer';
+import type { CommandBuffer, DrawCommand, PixiTopology, PolygonDrawCommand } from '~~/packages/std/src/common/systems/CommandBuffer';
 
 export type CommandHandler=(buffer:DrawCommand<any,any,any>,camera:Camera2D)=>void;
 
 export class PixiRendererAdapter implements IRendererAdapter{
   public root:PIXI.Container=new PIXI.Container();
-  private handlers=new Map<string,CommandHandler>();
+  private handlers=new Map<PixiTopology,CommandHandler>();
 
   public constructor(private renderer:PIXI.Renderer){
     this.handlers.set('polyline',this.drawPolyline);
+    this.handlers.set('polygon',this.drawPolygon);
     // this.handlers.set(PolygonGeometry,this.drawPolygon);
     // this.handlers.set(ArcGeometry,this.drawArc);
   }
@@ -52,37 +53,36 @@ export class PixiRendererAdapter implements IRendererAdapter{
     this.root.addChild(graphics);
   }
 
-  // private drawPolygon(
-  //   geometry:PolygonGeometry,
-  //   transform:Transform,
-  //   camera:Camera2D,
-  // ):void{
-  //   if(geometry.config.vertices.length===0)return;
+  private drawPolygon(
+    buffer:PolygonDrawCommand,
+    camera:Camera2D,
+  ):void{
+    if(buffer.geometry.vertices.length===0)return;
 
-  //   const graphics=new PIXI.Graphics();
+    const graphics=new PIXI.Graphics();
 
-  //   graphics.setStrokeStyle({
-  //     width:geometry.style.strokeWidth,
-  //     color:geometry.style.stroke,
-  //   });
-  //   graphics.setFillStyle({
-  //     color:geometry.style.fill,
-  //   });
+    graphics.setStrokeStyle({
+      width:buffer.style.strokeWidth,
+      color:buffer.style.stroke,
+    });
+    graphics.setFillStyle({
+      color:buffer.style.fill,
+    });
 
-  //   const first=this.applyTransform(geometry.config.vertices[0]!,transform,camera);
-  //   graphics.moveTo(first.x,first.y);
+    const first=this.applyTransform(buffer.geometry.vertices[0]!,buffer.transform,camera);
+    graphics.moveTo(first.x,first.y);
 
-  //   for(let i=1;i<geometry.config.vertices.length;i++){
-  //     const p=this.applyTransform(geometry.config.vertices[i]!,transform,camera);
-  //     graphics.lineTo(p.x,p.y);
-  //   }
+    for(let i=1;i<buffer.geometry.vertices.length;i++){
+      const p=this.applyTransform(buffer.geometry.vertices[i]!,buffer.transform,camera);
+      graphics.lineTo(p.x,p.y);
+    }
 
-  //   graphics.closePath();
-  //   graphics.fill();
-  //   graphics.stroke();
+    graphics.closePath();
+    graphics.fill();
+    graphics.stroke();
 
-  //   this.root.addChild(graphics);
-  // }
+    this.root.addChild(graphics);
+  }
 
   // private drawArc(
   //   geometry:ArcGeometry,

@@ -33,6 +33,13 @@ export class World{
     return component;
   }
 
+  public removeComponent<T extends Component>(entity:Entity,component:ComponentType<T>):void{
+    const componentName=component.name;
+    const store=this.m_stores.get(componentName);
+    if(store===undefined)return;
+    store.remove(entity);
+  }
+
   public getComponent<T extends Component>(
     entityId:Entity,
     component:ComponentType<T>,

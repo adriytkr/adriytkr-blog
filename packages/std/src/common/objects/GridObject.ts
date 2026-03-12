@@ -2,9 +2,12 @@ import { Component } from '@adriytkr/engine';
 
 export class GridObject extends Component{
   public constructor(
-    public rows:number,
-    public cols:number,
-    public spacing:number,
+    public xMin:number,
+    public xMax:number,
+    public yMin:number,
+    public yMax:number,
+    public xStep:number,
+    public yStep:number,
   ){
     super();
   }

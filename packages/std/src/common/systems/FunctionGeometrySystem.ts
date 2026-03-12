@@ -1,14 +1,17 @@
 import type { ISystem, World } from '@adriytkr/engine';
-import { Transform } from '../components';
-import { FunctionObject } from '../objects';
-import { PolylineGeometry } from '../geometry';
+import { DirtyTag, Renderable, Transform } from '../components';
+import { DEFAULT_FUNCTION_STYLE, FunctionObject, FunctionStyle } from '../objects';
 import type { Point } from '../../types';
+import type { PixiDrawCommand } from './CommandBuffer';
 
 export class FunctionGeometrySystem implements ISystem{
   public update(world:World,delta:number):void{
-    for(const entity of world.query(Transform,FunctionObject)){
+    for(const entity of world.query(DirtyTag,FunctionObject,Renderable,Transform)){
+      console.log(entity);
       const transform=world.getComponent(entity,Transform)!;
+      const renderable=world.getComponent(entity,Renderable)! as Renderable<PixiDrawCommand>;
       const func=world.getComponent(entity,FunctionObject)!;
+      const style=world.getComponent(entity,FunctionStyle)??DEFAULT_FUNCTION_STYLE;
 
       const points:Point[]=[];
       const dx=(func.domain[1]-func.domain[0])/func.samples;
@@ -16,7 +19,18 @@ export class FunctionGeometrySystem implements ISystem{
         points.push({x,y:func.fn(x),z:0});
       }
 
-      world.addComponent(entity,new PolylineGeometry({points}));
+      renderable.primitives.length=0;
+      renderable.primitives.push({
+        topology:'polyline',
+        geometry:{points},
+        style:{
+          stroke:style.stroke,
+          strokeWidth:style.strokeWidth,
+        },
+        transform,
+      });
+
+      world.removeComponent(entity,DirtyTag);
     }
   }
 }
