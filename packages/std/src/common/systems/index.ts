@@ -1,10 +1,7 @@
 export * from './PhysicsSystem';
 export * from './TransformSystem';
 export * from './AnimationSystem';
-export * from './FunctionGeometrySystem';
-export * from './ParametricFunctionGeometrySystem';
+
 export * from './RendererSystem';
-export * from './PolygonSystem';
-export * from './RegularPolygonSystem';
-export * from './VectorGeometrySystem';
-export * from './GridGeometrySystem';
+
+export * from './geometry/';

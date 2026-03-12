@@ -1,7 +1,7 @@
 import { Component } from '@adriytkr/engine';
 
 import type { Point } from '../../types';
-import type { DrawCommand } from '../systems/CommandBuffer';
+import type { DrawCommand } from '../renderers/commands/CommandBuffer';
 
 // export type PolylineCommand={
 //   type:'polyline';

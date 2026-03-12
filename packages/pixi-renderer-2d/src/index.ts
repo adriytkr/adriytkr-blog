@@ -1,2 +1,2 @@
-// export * from './PixiRendererSystem';
 export * from './PixiRendererAdapter';
+export * from './config';

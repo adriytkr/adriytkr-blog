@@ -1,7 +1,7 @@
 import type { ISystem, World } from '@adriytkr/engine';
-import { ClosedStyle, DEFAULT_CLOSED_STYLE, PolygonObject } from '../objects';
-import { DirtyTag, Renderable, Transform } from '../components';
-import type { PixiDrawCommand } from './CommandBuffer';
+import { ClosedStyle, DEFAULT_CLOSED_STYLE, PolygonObject } from '../../components/math/';
+import { DirtyTag, Renderable, Transform } from '../../components';
+import type { PixiDrawCommand } from '@adriytkr/pixi-renderer-2d';
 
 export class PolygonSystem implements ISystem{
   public update(world:World,delta:number){

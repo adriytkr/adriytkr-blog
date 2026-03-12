@@ -1,9 +1,8 @@
 import type { ISystem, World } from '@adriytkr/engine';
-import { DirtyTag, Renderable, Transform } from '../components';
-import { DEFAULT_FUNCTION_STYLE, FunctionObject, FunctionStyle, ParametricFunctionObject } from '../objects';
-import { PolylineGeometry } from '../geometry';
-import type { Point } from '../../types';
-import type { PixiDrawCommand } from './CommandBuffer';
+import { DirtyTag, Renderable, Transform } from '../../components';
+import { DEFAULT_FUNCTION_STYLE, FunctionStyle, ParametricFunctionObject } from '../../components/math/';
+import type { Point } from '../../../types';
+import type { PixiDrawCommand } from '@adriytkr/pixi-renderer-2d';
 
 export class ParametricFunctionGeometrySystem implements ISystem{
   public update(world:World,delta:number):void{

@@ -27,9 +27,10 @@ import {
 } from '@adriytkr/std';
 
 import { PixiRendererAdapter } from '@adriytkr/pixi-renderer-2d';
+import type { PixiDrawCommand } from '@adriytkr/pixi-renderer-2d';
+import { CommandBuffer } from '@adriytkr/std';
 
 import * as PIXI from 'pixi.js';
-import { CommandBuffer, type PixiDrawCommand } from '~~/packages/std/src/common/systems/CommandBuffer';
 
 const canvasRef=ref<HTMLCanvasElement|null>(null);
 
@@ -69,7 +70,7 @@ onMounted(async()=>{
 
   const pixiAdapter=new PixiRendererAdapter(renderer);
   const commandBuffer=new CommandBuffer<PixiDrawCommand>();
-  systemManager.add(new RendererSystem(pixiAdapter,commandBuffer));
+  systemManager.add(new RendererSystem<PixiDrawCommand>(pixiAdapter,commandBuffer));
 
   camera=create2DCamera(
     world,
@@ -82,29 +83,6 @@ onMounted(async()=>{
       },
     },
   );
-
-  const lailah=world.createEntity();
-  const transform=world.addComponent(lailah,new Transform());
-  world.addComponent(lailah,new Hierarchy());
-  const renderable=new Renderable<PixiDrawCommand>();
-  renderable.primitives.push({
-    topology:'polyline',
-    geometry:{
-      points:[
-        {x:0,y:0,z:0},
-        {x:1,y:0,z:0},
-        {x:1,y:1,z:0},
-        {x:2,y:1,z:0},
-      ],
-    },
-    style:{
-      stroke:'red',
-      strokeWidth:1,
-    },
-    transform,
-  });
-  world.addComponent(lailah,renderable);
-  world.addComponent(lailah,new DirtyTag());
 
   const func=world.createEntity();
   world.addComponent(func,new Transform());

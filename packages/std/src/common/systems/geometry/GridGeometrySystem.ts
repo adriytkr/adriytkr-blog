@@ -1,8 +1,8 @@
 import type { ISystem, World } from '@adriytkr/engine';
-import { DirtyTag, Renderable, Transform } from '../components';
-import { DEFAULT_GRID_STYLE, GridObject, GridStyle } from '../objects';
-import type { Point } from '../../types';
-import type { PixiDrawCommand } from './CommandBuffer';
+import { DirtyTag, Renderable, Transform } from '../../components';
+import { DEFAULT_GRID_STYLE, GridObject, GridStyle } from '../../components/math/';
+import type { Point } from '../../../types';
+import type { PixiDrawCommand } from '@adriytkr/pixi-renderer-2d';
 
 export class GridGeometrySystem implements ISystem{
   public update(world:World,delta:number):void{

@@ -1,24 +1,28 @@
-import type { ComponentType } from '@adriytkr/engine';
-import { ArcGeometry, Camera2D, PolygonGeometry, PolylineGeometry, Transform } from '@adriytkr/std';
-import type { Geometry, IRendererAdapter } from '@adriytkr/std';
+import { Camera2D, Transform } from '@adriytkr/std';
+import type { IRendererAdapter } from '@adriytkr/std';
+
+import type {
+  CommandBuffer,
+  DrawCommand,
+  PolygonDrawCommand,
+} from '@adriytkr/std';
 
 import * as PIXI from 'pixi.js';
-import type { CommandBuffer, DrawCommand, PixiTopology, PolygonDrawCommand } from '~~/packages/std/src/common/systems/CommandBuffer';
+
+import type { PixiTopology,PixiDrawCommand } from './config';
 
 export type CommandHandler=(buffer:DrawCommand<any,any,any>,camera:Camera2D)=>void;
 
-export class PixiRendererAdapter implements IRendererAdapter{
+export class PixiRendererAdapter implements IRendererAdapter<PixiDrawCommand>{
   public root:PIXI.Container=new PIXI.Container();
   private handlers=new Map<PixiTopology,CommandHandler>();
 
   public constructor(private renderer:PIXI.Renderer){
     this.handlers.set('polyline',this.drawPolyline);
     this.handlers.set('polygon',this.drawPolygon);
-    // this.handlers.set(PolygonGeometry,this.drawPolygon);
-    // this.handlers.set(ArcGeometry,this.drawArc);
   }
 
-  public execute(buffer:CommandBuffer<any>,camera:Camera2D):void{
+  public execute(buffer:CommandBuffer<PixiDrawCommand>,camera:Camera2D):void{
     for(const command of buffer.commands){
       const handler=this.handlers.get(command.topology);
       if(!handler)continue;

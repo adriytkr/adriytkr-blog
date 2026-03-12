@@ -16,3 +16,5 @@ export * from './HiddenFlag';
 export * from './DirtyTag';
 
 export * from './Renderable';
+
+export * from './math/';

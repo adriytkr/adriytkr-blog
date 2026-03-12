@@ -1,10 +1,9 @@
 export * from './VectorObject';
-export * from './ParametricFunctionObject';
+
 export * from './FunctionObject';
+export * from './ParametricFunctionObject';
+
 export * from './PolygonObject';
 export * from './RegularPolygonObject';
+
 export * from './GridObject';
-export * from './FunctionStyle';
-export * from './ClosedStyle';
-export * from './VectorStyle';
-export * from './GridStyle';

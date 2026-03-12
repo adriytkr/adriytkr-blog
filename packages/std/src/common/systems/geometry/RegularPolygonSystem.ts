@@ -1,8 +1,8 @@
 import type { ISystem, World } from '@adriytkr/engine';
-import { ClosedStyle, DEFAULT_CLOSED_STYLE, RegularPolygonObject } from '../objects';
-import { DirtyTag, Renderable, Transform } from '../components';
-import type { Point } from '../../types';
-import type { PixiDrawCommand } from './CommandBuffer';
+import { ClosedStyle, DEFAULT_CLOSED_STYLE, RegularPolygonObject } from '../../components/math/';
+import { DirtyTag, Renderable, Transform } from '../../components';
+import type { Point } from '../../../types';
+import type { PixiDrawCommand } from '@adriytkr/pixi-renderer-2d';
 
 export class RegularPolygonSystem implements ISystem{
   public update(world:World,delta:number):void{

@@ -1,8 +1,7 @@
 import type { ISystem, World } from '@adriytkr/engine';
-import { DirtyTag, Renderable, Transform } from '../components';
-import { PolygonGeometry, PolylineGeometry } from '../geometry';
-import { DEFAULT_VECTOR_STYLE, VectorObject, VectorStyle } from '../objects';
-import type { PixiDrawCommand } from './CommandBuffer';
+import { DirtyTag, Renderable, Transform } from '../../components';
+import { DEFAULT_VECTOR_STYLE, VectorObject, VectorStyle } from '../../components/math/';
+import type { PixiDrawCommand } from '@adriytkr/pixi-renderer-2d';
 
 export class VectorGeometrySystem implements ISystem{
   public update(world:World,delta:number):void{
@@ -22,9 +21,6 @@ export class VectorGeometrySystem implements ISystem{
         },
         transform,
       });
-      world.addComponent(entity,new PolylineGeometry({
-        points:[{x:0,y:0,z:0},vector.to],
-      }));
 
       const size=0.3;
       const dx=vector.to.x;
