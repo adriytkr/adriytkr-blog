@@ -16,7 +16,7 @@ export class FunctionGeometrySystem implements ISystem{
         points.push({x,y:func.fn(x),z:0});
       }
 
-      world.addComponent(entity,new PolylineGeometry(points));
+      world.addComponent(entity,new PolylineGeometry({points}));
     }
   }
 }

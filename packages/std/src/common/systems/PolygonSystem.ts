@@ -8,7 +8,7 @@ export class PolygonSystem implements ISystem{
     for(const entity of world.query(Transform,PolygonObject)){
       const polygon=world.getComponent(entity,PolygonObject)!;
 
-      world.addComponent(entity,new PolygonGeometry(polygon.vertices));
+      world.addComponent(entity,new PolygonGeometry({vertices:polygon.vertices}));
     }
   }
 }

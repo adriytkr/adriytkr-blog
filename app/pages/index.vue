@@ -28,6 +28,8 @@ import {
   VectorGeometrySystem,
   VectorObject,
   ArcGeometry,
+  GridObject,
+  GridGeometrySystem,
 } from '@adriytkr/std';
 
 import {
@@ -65,6 +67,7 @@ onMounted(async()=>{
   systemManager.add(new RegularPolygonSystem());
   systemManager.add(new FunctionGeometrySystem());
   systemManager.add(new VectorGeometrySystem());
+  systemManager.add(new GridGeometrySystem());
   systemManager.add(new ParametricFunctionGeometrySystem());
 
   const renderer=await PIXI.autoDetectRenderer({
@@ -123,7 +126,16 @@ onMounted(async()=>{
   const circle=world.createEntity();
   world.addComponent(circle,new Transform());
   world.addComponent(circle,new Hierarchy());
-  world.addComponent(circle,new ArcGeometry(2,0,Math.PI/2));
+  world.addComponent(circle,new ArcGeometry({
+    radius:2,
+    startAngle:0,
+    endAngle:Math.PI/2,
+  }));
+
+  const grid=world.createEntity();
+  world.addComponent(circle,new Transform());
+  world.addComponent(circle,new Hierarchy());
+  world.addComponent(circle,new GridObject(10,10,1));
   // world.addComponent(square,new PolygonObject([
   //   {x:0,y:0,z:0},
   //   {x:1,y:0,z:0},

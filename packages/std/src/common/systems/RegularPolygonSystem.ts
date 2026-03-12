@@ -25,7 +25,7 @@ export class RegularPolygonSystem implements ISystem{
         });
       }
 
-      world.addComponent(entity,new PolygonGeometry(vertices));
+      world.addComponent(entity,new PolygonGeometry({vertices}));
     }
   }
 }

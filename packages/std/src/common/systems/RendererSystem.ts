@@ -37,28 +37,4 @@ export class RendererSystem implements ISystem{
       this.renderer.draw(geometry,transform,camera);
     }
   }
-
-  private applyTransform(
-    point:{x:number;y:number},
-    transform:Transform,
-    camera:Camera2D,
-  ){
-    let x=point.x*transform.worldScale.x;
-    let y=point.y*transform.worldScale.y;
-
-    const theta=2*Math.atan2(transform.worldRotation.z,transform.worldRotation.w);
-    const cosR=Math.cos(theta);
-    const sinR=Math.sin(theta);
-
-    const xRot=x*cosR-y*sinR;
-    const yRot=x*sinR+y*cosR;
-
-    x=xRot+transform.worldPosition.x;
-    y=yRot+transform.worldPosition.y;
-
-    const screenX=(x-camera.x)*camera.zoom+camera.width/2;
-    const screenY=(camera.y-y)*camera.zoom+camera.height/2;
-
-    return {x:screenX,y:screenY,z:0};
-  }
 }

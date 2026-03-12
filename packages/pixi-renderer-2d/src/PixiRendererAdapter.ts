@@ -1,25 +1,28 @@
+import type { ComponentType } from '@adriytkr/engine';
 import { ArcGeometry, Camera2D, PolygonGeometry, PolylineGeometry, Transform } from '@adriytkr/std';
 import type { Geometry, IRendererAdapter } from '@adriytkr/std';
 
 import * as PIXI from 'pixi.js';
 
+export type GeometryHandler=(geometry:any,transform:Transform,camera:Camera2D)=>void;
+
 export class PixiRendererAdapter implements IRendererAdapter{
   public root:PIXI.Container=new PIXI.Container();
+  private handlers=new Map<Geometry,GeometryHandler>();
 
-  public constructor(private renderer:PIXI.Renderer){}
+  public constructor(private renderer:PIXI.Renderer){
+    this.handlers.set(PolylineGeometry,this.drawPolyline);
+    this.handlers.set(PolygonGeometry,this.drawPolygon);
+    this.handlers.set(ArcGeometry,this.drawArc);
+  }
 
   public draw(geometry:Geometry,transform:Transform,camera:Camera2D):void{
-    if(geometry instanceof PolylineGeometry){
-      if(geometry.points.length===0)return;
-      this.drawPolyline(geometry,transform,camera);
-    }else if(geometry instanceof PolygonGeometry){
-      if(geometry.vertices.length===0)return;
-      this.drawPolygon(geometry,transform,camera);
-    }else if(geometry instanceof ArcGeometry){
-      this.drawArc(geometry,transform,camera);
-    }else{
+    const handler=this.handlers.get(geometry.constructor);
+
+    if(handler===undefined)
       throw Error('unsupported geometry');
-    }
+
+    handler.call(this,geometry,transform,camera);
   }
 
   private drawPolyline(
@@ -27,18 +30,20 @@ export class PixiRendererAdapter implements IRendererAdapter{
     transform:Transform,
     camera:Camera2D,
   ):void{
+    if(geometry.config.points.length===0)return;
+
     const graphics=new PIXI.Graphics();
 
     graphics.setStrokeStyle({
-      width:1,
-      color:0xff0000,
+      width:geometry.style.strokeWidth,
+      color:geometry.style.stroke,
     });
 
-    const first=this.applyTransform(geometry.points[0]!,transform,camera);
+    const first=this.applyTransform(geometry.config.points[0]!,transform,camera);
     graphics.moveTo(first.x,first.y);
 
-    for(let i=1;i<geometry.points.length;i++){
-      const p=this.applyTransform(geometry.points[i]!,transform,camera);
+    for(let i=1;i<geometry.config.points.length;i++){
+      const p=this.applyTransform(geometry.config.points[i]!,transform,camera);
       graphics.lineTo(p.x,p.y);
     }
 
@@ -52,21 +57,23 @@ export class PixiRendererAdapter implements IRendererAdapter{
     transform:Transform,
     camera:Camera2D,
   ):void{
+    if(geometry.config.vertices.length===0)return;
+
     const graphics=new PIXI.Graphics();
 
     graphics.setStrokeStyle({
-      width:1,
-      color:'red',
+      width:geometry.style.strokeWidth,
+      color:geometry.style.stroke,
     });
     graphics.setFillStyle({
-      color:'white',
+      color:geometry.style.fill,
     });
 
-    const first=this.applyTransform(geometry.vertices[0]!,transform,camera);
+    const first=this.applyTransform(geometry.config.vertices[0]!,transform,camera);
     graphics.moveTo(first.x,first.y);
 
-    for(let i=1;i<geometry.vertices.length;i++){
-      const p=this.applyTransform(geometry.vertices[i]!,transform,camera);
+    for(let i=1;i<geometry.config.vertices.length;i++){
+      const p=this.applyTransform(geometry.config.vertices[i]!,transform,camera);
       graphics.lineTo(p.x,p.y);
     }
 
@@ -85,19 +92,25 @@ export class PixiRendererAdapter implements IRendererAdapter{
     const graphics=new PIXI.Graphics();
 
     graphics.setStrokeStyle({
-      width:1,
-      color:'red',
+      width:geometry.style.strokeWidth,
+      color:geometry.style.stroke,
     });
     graphics.setFillStyle({
-      color:'white',
+      color:geometry.style.fill,
     });
 
     const center=this.applyTransform(transform.localPosition,transform,camera);
     const worldScale=Math.max(transform.worldScale.x,transform.worldScale.y);
-    const screenRadius=geometry.radius*worldScale*camera.zoom;
+    const screenRadius=geometry.config.radius*worldScale*camera.zoom;
 
     graphics.moveTo(center.x,center.y);
-    graphics.arc(center.x,center.y,screenRadius,geometry.startAngle,geometry.endAngle);
+    graphics.arc(
+      center.x,
+      center.y,
+      screenRadius,
+      geometry.config.startAngle,
+      geometry.config.endAngle,
+    );
 
     graphics.fill();
     graphics.stroke();

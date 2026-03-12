@@ -7,7 +7,9 @@ export class VectorGeometrySystem implements ISystem{
   public update(world:World,delta:number):void{
     for(const entity of world.query(Transform,VectorObject)){
       const vector=world.getComponent(entity,VectorObject)!;
-      world.addComponent(entity,new PolylineGeometry([{x:0,y:0,z:0},vector.to]));
+      world.addComponent(entity,new PolylineGeometry({
+        points:[{x:0,y:0,z:0},vector.to],
+      }));
 
       const size=0.3;
       const dx=vector.to.x;
@@ -19,7 +21,7 @@ export class VectorGeometrySystem implements ISystem{
       const py=ux*size;
       const base1={x:vector.to.x-ux*size+px,y:vector.to.y-uy*size+py,z:0};
       const base2={x:vector.to.x-ux*size-px,y:vector.to.y-uy*size-py,z:0};
-      world.addComponent(entity,new PolygonGeometry([vector.to,base1,base2]));
+      world.addComponent(entity,new PolygonGeometry({vertices:[vector.to,base1,base2]}));
     }
   }
 }
