@@ -1,7 +1,7 @@
 import type { Point } from '../../types';
 import type { Transform } from '../components';
 
-export interface DrawCommand<T,G,S>{
+export interface DrawCommand<T extends string,G,S>{
   topology:T,
   geometry:G,
   style:S,
@@ -14,11 +14,13 @@ export type PolylineGeometry={
 };
 export type PolylineStyle={
   stroke:string;
-  strokeWidth:string;
+  strokeWidth:number;
 };
 export type PolylineDrawCommand=DrawCommand<PolylineTopology,PolylineGeometry,PolylineStyle>;
 
-export class CommandBuffer<T extends DrawCommand<any,any,any>>{
+export type PixiDrawCommand=PolylineDrawCommand;
+
+export class CommandBuffer<T extends DrawCommand<string,any,any>>{
   public commands:T[]=[];
   
   public push(cmd:T):void{

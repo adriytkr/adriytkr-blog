@@ -13,7 +13,7 @@ export type RenderEntityCommand={
 export class RendererSystem implements ISystem{
   public constructor(
     private renderer:IRendererAdapter,
-    private buffer=new CommandBuffer(),
+    private buffer:CommandBuffer<any>,
   ){}
 
   public update(world:World,delta:number):void{

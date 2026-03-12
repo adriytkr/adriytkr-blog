@@ -16,6 +16,7 @@ import {
 import { PixiRendererAdapter } from '@adriytkr/pixi-renderer-2d';
 
 import * as PIXI from 'pixi.js';
+import { CommandBuffer, type PixiDrawCommand } from '~~/packages/std/src/common/systems/CommandBuffer';
 
 const canvasRef=ref<HTMLCanvasElement|null>(null);
 
@@ -48,7 +49,8 @@ onMounted(async()=>{
   });
 
   const pixiAdapter=new PixiRendererAdapter(renderer);
-  systemManager.add(new RendererSystem(pixiAdapter));
+  const commandBuffer=new CommandBuffer<PixiDrawCommand>();
+  systemManager.add(new RendererSystem(pixiAdapter,commandBuffer));
 
   camera=create2DCamera(
     world,
@@ -65,7 +67,7 @@ onMounted(async()=>{
   const lailah=world.createEntity();
   const transform=world.addComponent(lailah,new Transform());
   world.addComponent(lailah,new Hierarchy());
-  const renderable=new Renderable();
+  const renderable=new Renderable<PixiDrawCommand>();
   renderable.primitives.push({
     topology:'polyline',
     geometry:{

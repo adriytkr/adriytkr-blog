@@ -45,6 +45,6 @@ import type { DrawCommand } from '../systems/CommandBuffer';
 //   }
 // }
 
-export class Renderable{
-  public primitives:DrawCommand<any,any,any>[]=[];
+export class Renderable<T extends DrawCommand<string,any,any>>{
+  public primitives:T[]=[];
 }
