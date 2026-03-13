@@ -1,3 +1,5 @@
+export * from './ArcObject';
+
 export * from './VectorObject';
 
 export * from './FunctionObject';

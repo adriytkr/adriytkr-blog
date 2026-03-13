@@ -1,5 +1,5 @@
 import { Camera2D, Transform } from '@adriytkr/std';
-import type { IRendererAdapter } from '@adriytkr/std';
+import type { ArcDrawCommand, IRendererAdapter, PolylineDrawCommand } from '@adriytkr/std';
 
 import type {
   CommandBuffer,
@@ -20,6 +20,7 @@ export class PixiRendererAdapter implements IRendererAdapter<PixiDrawCommand>{
   public constructor(private renderer:PIXI.Renderer){
     this.handlers.set('polyline',this.drawPolyline);
     this.handlers.set('polygon',this.drawPolygon);
+    this.handlers.set('arc',this.drawArc);
   }
 
   public execute(buffer:CommandBuffer<PixiDrawCommand>,camera:Camera2D):void{
@@ -31,7 +32,7 @@ export class PixiRendererAdapter implements IRendererAdapter<PixiDrawCommand>{
   }
 
   private drawPolyline(
-    buffer:DrawCommand<any,any,any>,
+    buffer:PolylineDrawCommand,
     camera:Camera2D,
   ):void{
     const {geometry,style,transform}=buffer;
@@ -88,38 +89,37 @@ export class PixiRendererAdapter implements IRendererAdapter<PixiDrawCommand>{
     this.root.addChild(graphics);
   }
 
-  // private drawArc(
-  //   geometry:ArcGeometry,
-  //   transform:Transform,
-  //   camera:Camera2D,
-  // ):void{
-  //   const graphics=new PIXI.Graphics();
+  private drawArc(
+    buffer:ArcDrawCommand,
+    camera:Camera2D,
+  ):void{
+    const graphics=new PIXI.Graphics();
 
-  //   graphics.setStrokeStyle({
-  //     width:geometry.style.strokeWidth,
-  //     color:geometry.style.stroke,
-  //   });
-  //   graphics.setFillStyle({
-  //     color:geometry.style.fill,
-  //   });
+    graphics.setStrokeStyle({
+      width:buffer.style.strokeWidth,
+      color:buffer.style.stroke,
+    });
+    graphics.setFillStyle({
+      color:buffer.style.fill,
+    });
 
-  //   const center=this.applyTransform(transform.localPosition,transform,camera);
-  //   const worldScale=Math.max(transform.worldScale.x,transform.worldScale.y);
-  //   const screenRadius=geometry.config.radius*worldScale*camera.zoom;
+    const center=this.applyTransform(buffer.transform.localPosition,buffer.transform,camera);
+    const worldScale=Math.max(buffer.transform.worldScale.x,buffer.transform.worldScale.y);
+    const screenRadius=buffer.geometry.radius*worldScale*camera.zoom;
 
-  //   graphics.moveTo(center.x,center.y);
-  //   graphics.arc(
-  //     center.x,
-  //     center.y,
-  //     screenRadius,
-  //     geometry.config.startAngle,
-  //     geometry.config.endAngle,
-  //   );
+    graphics.moveTo(center.x,center.y);
+    graphics.arc(
+      center.x,
+      center.y,
+      screenRadius,
+      buffer.geometry.startAngle,
+      buffer.geometry.endAngle,
+    );
 
-  //   graphics.fill();
-  //   graphics.stroke();
-  //   this.root.addChild(graphics);
-  // }
+    graphics.fill();
+    graphics.stroke();
+    this.root.addChild(graphics);
+  }
 
   private applyTransform(
     point:{x:number;y:number},

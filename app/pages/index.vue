@@ -24,6 +24,8 @@ import {
   GridGeometrySystem,
   GridObject,
   DirtyTag,
+  ArcObject,
+  ArcGeometrySystem,
 } from '@adriytkr/std';
 
 import { PixiRendererAdapter } from '@adriytkr/pixi-renderer-2d';
@@ -58,6 +60,7 @@ onMounted(async()=>{
   systemManager.add(new RegularPolygonSystem());
   systemManager.add(new VectorGeometrySystem());
   systemManager.add(new GridGeometrySystem());
+  systemManager.add(new ArcGeometrySystem());
 
   const renderer=await PIXI.autoDetectRenderer({
     canvas:canvasRef.value,
@@ -122,10 +125,7 @@ onMounted(async()=>{
   const pentagon=world.createEntity();
   world.addComponent(pentagon,new Transform());
   world.addComponent(pentagon,new Hierarchy());
-  world.addComponent(pentagon,new RegularPolygonObject(
-    5,
-    2,
-  ));
+  world.addComponent(pentagon,new RegularPolygonObject(5,2));
   world.addComponent(pentagon,new Renderable());
   world.addComponent(pentagon,new DirtyTag());
 
@@ -142,6 +142,13 @@ onMounted(async()=>{
   world.addComponent(grid,new GridObject(-3,3,-3,3,1,1));
   world.addComponent(grid,new Renderable());
   world.addComponent(grid,new DirtyTag());
+
+  const arc=world.createEntity();
+  world.addComponent(arc,new Transform());
+  world.addComponent(arc,new Hierarchy());
+  world.addComponent(arc,new ArcObject(3,0,Math.PI/3));
+  world.addComponent(arc,new Renderable());
+  world.addComponent(arc,new DirtyTag());
 
   let lastTime=performance.now();
   function loop(time:number){
