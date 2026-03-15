@@ -1,5 +1,5 @@
 import { Component } from '@adriytkr/engine';
-import type { updateAnimation } from '../../utils';
+import type { updateAnimation } from '../animations/types';
 
 export type AnimationTrack={
   duration:number;

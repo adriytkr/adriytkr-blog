@@ -71,24 +71,24 @@ onMounted(async()=>{
   systemManager.add(new RendererSystem3D<ThreeDrawCommand>(threeAdapter,commandBuffer));
 
   const cameraEntity = world.createEntity();
-  world.addComponent(cameraEntity,new Transform());
+  world.addOrRetrieveComponent(cameraEntity,new Transform());
   const camera3D=new Camera3D({ 
     fov:75, 
     aspect:canvas.width/canvas.height,
   });
-  world.addComponent(cameraEntity,camera3D);
+  world.addOrRetrieveComponent(cameraEntity,camera3D);
   threeCamera.position.z=20;
 
   funcEntity=world.createEntity();
-  world.addComponent(funcEntity,new Transform());
-  world.addComponent(funcEntity,new Hierarchy());
-  world.addComponent(funcEntity,new FunctionObject({
+  world.addOrRetrieveComponent(funcEntity,new Transform());
+  world.addOrRetrieveComponent(funcEntity,new Hierarchy());
+  world.addOrRetrieveComponent(funcEntity,new FunctionObject({
     fn:x=>x**2,
     samples:200,
     domain:[-3,3],
   }));
-  world.addComponent(funcEntity,new Renderable());
-  world.addComponent(funcEntity,new DirtyTag());
+  world.addOrRetrieveComponent(funcEntity,new Renderable());
+  world.addOrRetrieveComponent(funcEntity,new DirtyTag());
 
   let lastTime=performance.now();
   function loop(time:number){
@@ -106,7 +106,7 @@ onMounted(async()=>{
 });
 
 function update(){
-  const animationGroup=world.addComponent(funcEntity,new AnimationGroup());
+  const animationGroup=world.addOrRetrieveComponent(funcEntity,new AnimationGroup());
   const transform=world.getComponent(funcEntity,Transform)!;
 
   animationGroup.addTrack(shiftAnimationTrack(3,transform,{x:2,y:2,z:0}));

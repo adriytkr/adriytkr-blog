@@ -1,2 +1,2 @@
-export * from './PixiRendererAdapter';
-export * from './config';
+export * from './PixiRendererSystem';
+export * from './PixiRenderable';

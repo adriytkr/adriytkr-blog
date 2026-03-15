@@ -1,35 +1,27 @@
 <script setup lang="ts">
-import type { Entity } from '@adriytkr/engine';
+import { SystemManager, World } from '@adriytkr/engine';
+import type { EntityObject } from '@adriytkr/engine';
 
 import { Camera2D } from '@adriytkr/std/2d/index';
 
 import {
-  TransformSystem,
-  create2DCamera,
-  RendererSystem,
-  FunctionGeometrySystem,
   AnimationSystem,
-  FunctionSceneObject,
-  Scene,
+  TransformSystem,
+  GeometryBuffer,
+  Hierarchy,
+  Transform,
+  VectorData,
 } from '@adriytkr/std';
 
-import { PixiRendererAdapter } from '@adriytkr/pixi-renderer-2d';
-import type { PixiDrawCommand } from '@adriytkr/pixi-renderer-2d';
-import { CommandBuffer } from '@adriytkr/std';
+import { PixiRendererSystem } from '@adriytkr/pixi-renderer-2d';
 
 import * as PIXI from 'pixi.js';
 
 const canvasRef=ref<HTMLCanvasElement|null>(null);
 
-let camera:{
-  entity:Entity,
-  camera2D:Camera2D,
-};
-let scene:Scene;
+let camera:EntityObject;
 
-let theFunction:FunctionSceneObject;
-let theFunction2:FunctionSceneObject;
-
+// on mount
 onMounted(async()=>{
   if(!canvasRef.value)return;
 
@@ -37,137 +29,72 @@ onMounted(async()=>{
   canvas.width=canvas.clientWidth;
   canvas.height=canvas.clientHeight;
 
-  scene=new Scene();
+  const world=new World();
+  const systemManager=new SystemManager();
 
-  scene.addSystem(new AnimationSystem());
-  scene.addSystem(new TransformSystem());
-  scene.addSystem(new FunctionGeometrySystem());
+  systemManager.add(new AnimationSystem());
+  systemManager.add(new TransformSystem());
 
   const renderer=await PIXI.autoDetectRenderer({
-    canvas:canvasRef.value,
+    canvas,
     width:canvas.width,
     height:canvas.height,
-    resolution:window.devicePixelRatio,
-    antialias:true,
-    autoDensity:true,
   });
+  const stage=new PIXI.Container();
+  systemManager.add(new PixiRendererSystem(stage,renderer));
 
-  const pixiAdapter=new PixiRendererAdapter(renderer);
-  const commandBuffer=new CommandBuffer<PixiDrawCommand>();
-  scene.addSystem(new RendererSystem<PixiDrawCommand>(pixiAdapter,commandBuffer));
-
-  camera=create2DCamera(
-    scene.world,
-    {
-      position:{x:0,y:0,z:0},
+  // camera
+  camera=world.createEntity();
+  camera.addOrRetrieveComponent(
+    new Camera2D({
+      x:0,
+      y:0,
       zoom:50,
-      size:{
-        width:canvas.width,
-        height:canvas.height,
-      },
-    },
+      width:canvas.width,
+      height:canvas.height,
+    }),
   );
 
-  // const para=scene.world.createEntity();
-  // scene.world.addComponent(para,new Transform());
-  // scene.world.addComponent(para,new Hierarchy());
-  // scene.world.addComponent(para,new ParametricFunctionObject({
-  //   x:t=>t+5,
-  //   y:t=>(t+5)**2,
-  //   tDomain:[-3,3],
-  //   samples:200,
-  // }));
-  // scene.world.addComponent(para,new Renderable());
-  // scene.world.addComponent(para,new DirtyTag());
+  // vector
+  const vector=world.createEntity();
+  vector.addOrRetrieveComponent(
+    new VectorData({
+      to:{x:1,y:1,z:1},
+    }),
+  );
+  vector.addOrRetrieveComponent(new Hierarchy());
+  vector.addOrRetrieveComponent(new Transform());
+  vector.addOrRetrieveComponent(
+    new GeometryBuffer({
+      buffer:[
+        {
+          type:'polyline',
+          points:[
+            {x:0,y:0,z:0},
+            {x:1,y:1,z:0},
+            {x:2,y:-3,z:0},
+          ],
+        },
+        {
+          type:'arc',
+        },
+      ],
+    }),
+  );
 
-  theFunction=new FunctionSceneObject({
-    fn:x=>x**2,
-    domain:[-3,10],
-    samples:200,
-  });
-  scene.add(theFunction);
-
-  theFunction2=new FunctionSceneObject({
-    fn:x=>2*x+3,
-    domain:[-3,10],
-    samples:200,
-  });
-  scene.add(theFunction2);
-
-  // const polygon=world.createEntity();
-  // world.addComponent(polygon,new Transform());
-  // world.addComponent(polygon,new Hierarchy());
-  // world.addComponent(polygon,new PolygonObject({
-  //   vertices:[
-  //     {x:0,y:0,z:0},
-  //     {x:1,y:1,z:0},
-  //     {x:2,y:1,z:0},
-  //     {x:2,y:0,z:0},
-  //   ]
-  // }));
-  // world.addComponent(polygon,new Renderable());
-  // world.addComponent(polygon,new DirtyTag());
-
-  // const pentagon=world.createEntity();
-  // world.addComponent(pentagon,new Transform());
-  // world.addComponent(pentagon,new Hierarchy());
-  // world.addComponent(pentagon,new RegularPolygonObject({
-  //   sidelength:2,
-  //   sides:5,
-  // }));
-  // world.addComponent(pentagon,new Renderable());
-  // world.addComponent(pentagon,new DirtyTag());
-
-  // const vector=world.createEntity();
-  // world.addComponent(vector,new Transform());
-  // world.addComponent(vector,new Hierarchy());
-  // world.addComponent(vector,new VectorObject({
-  //   to:{x:4,y:2,z:0},
-  // }));
-  // world.addComponent(vector,new Renderable());
-  // world.addComponent(vector,new DirtyTag());
-
-  // const grid=world.createEntity();
-  // world.addComponent(grid,new Transform());
-  // world.addComponent(grid,new Hierarchy());
-  // world.addComponent(grid,new GridObject({
-  //   xMin:-3,
-  //   xMax:3,
-  //   yMin:-3,
-  //   yMax:3,
-  //   xStep:1,
-  //   yStep:1,
-  // }));
-  // world.addComponent(grid,new Renderable());
-  // world.addComponent(grid,new DirtyTag());
-
-  // const arc=world.createEntity();
-  // world.addComponent(arc,new Transform());
-  // world.addComponent(arc,new Hierarchy());
-  // world.addComponent(arc,new ArcObject({
-  //   radius:3,
-  //   startAngle:0,
-  //   endAngle:Math.PI/3,
-  // }));
-  // world.addComponent(arc,new Renderable());
-  // world.addComponent(arc,new DirtyTag());
-
+  // loop
   let lastTime=performance.now();
   function loop(time:number){
-    pixiAdapter.root.removeChildren();
-
     const delta=(time-lastTime)/1000;
     lastTime=time;
-    scene.update(delta);
-
-    renderer.render({
-      container:pixiAdapter.root,
-    });
+    systemManager.update(world,delta);
+    renderer.render(stage);
     requestAnimationFrame(loop);
   }
 
   requestAnimationFrame(loop);
 
+  // events
   canvas.addEventListener('wheel',handleMouseScroll);
   canvas.addEventListener('mousedown',handleMouseDown);
   canvas.addEventListener('mouseup',handleMouseUp);
@@ -177,20 +104,15 @@ onMounted(async()=>{
 let isDragging=false;
 let lastMouse={x:0,y:0};
 
-function update(){
-  theFunction.setDomain([-10,-5]);
-  console.log(theFunction.domain);
-}
-
-function clear(){
-
-}
-
 function handleMouseScroll(e:WheelEvent){
   e.preventDefault();
   const zoomFactor=1.1;
-  if(e.deltaY<0)camera.camera2D.zoom*=zoomFactor;
-  else camera.camera2D.zoom/=zoomFactor;
+
+  const cameraComponent=camera.getComponent(Camera2D);
+  if(cameraComponent===undefined)return;
+
+  if(e.deltaY<0)cameraComponent.zoom*=zoomFactor;
+  else cameraComponent.zoom/=zoomFactor;
 }
 
 function handleMouseDown(e:MouseEvent){
@@ -204,13 +126,18 @@ function handleMouseUp(){
 
 function handleMouseMove(e:MouseEvent){
   if(!isDragging)return;
-  const dx=(e.clientX-lastMouse.x)/camera.camera2D.zoom;
-  const dy=(e.clientY-lastMouse.y)/camera.camera2D.zoom;
-  camera.camera2D.x-=dx;
-  camera.camera2D.y+=dy;
+
+  const cameraComponent=camera.getComponent(Camera2D);
+  if(cameraComponent===undefined)return;
+
+  const dx=(e.clientX-lastMouse.x)/cameraComponent.zoom;
+  const dy=(e.clientY-lastMouse.y)/cameraComponent.zoom;
+  cameraComponent.x-=dx;
+  cameraComponent.y-=dy;
   lastMouse={x:e.clientX,y:e.clientY};
 }
 
+// dispose
 onUnmounted(()=>{
   if(!canvasRef.value)return;
 
@@ -226,7 +153,6 @@ onUnmounted(()=>{
 <template>
   <h1>Hello, World!</h1>
   <canvas ref="canvasRef"></canvas>
-  <button @click="update">Update</button>
 </template>
 
 <style scoped>

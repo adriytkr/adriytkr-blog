@@ -5,7 +5,7 @@ export interface VectorOptions{
   to:Point;
 }
 
-export class VectorObject extends Component{
+export class VectorData extends Component{
   public to:Point;
 
   public constructor(options:VectorOptions){

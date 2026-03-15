@@ -2,16 +2,17 @@ import type { Entity } from '../entity/Entity';
 import { SparseSet } from '../storage/SparseSet';
 import { Component } from '../component/Component';
 import type { ComponentType } from '../component/Component';
+import { EntityObject } from '../entity';
 
 export class World{
   private m_nextEntityId=0;
   private m_entities:Set<Entity>=new Set();
   private m_stores:Map<string,SparseSet<any>>=new Map();
 
-  public createEntity():Entity{
+  public createEntity():EntityObject{
     const entity:Entity=this.m_nextEntityId++;
     this.m_entities.add(entity);
-    return entity;
+    return new EntityObject(entity,this);
   }
 
   public destroyEntity(entity:Entity):void{
@@ -23,7 +24,7 @@ export class World{
     this.m_entities.delete(entity);
   }
 
-  public addComponent<T extends Component>(entity:Entity,component:T):T{
+  public addOrRetrieveComponent<T extends Component>(entity:Entity,component:T):T{
     const componentName=component.constructor.name;
     if(!this.m_stores.has(componentName))
       this.m_stores.set(componentName,new SparseSet<T>());
@@ -47,8 +48,11 @@ export class World{
     return this.m_stores.get(component.name)?.get(entityId);
   }
 
-  public query(...components:ComponentType<any>[]):Entity[]{
-    if(components.length===0)return Array.from(this.m_entities);
+  public query(...components:ComponentType<any>[]):EntityObject[]{
+    if(components.length===0)
+      return Array
+        .from(this.m_entities)
+        .map(entity=>new EntityObject(entity,this));
 
     const stores=components
       .map(component=>this.m_stores.get(component.name))
@@ -76,6 +80,6 @@ export class World{
       if(hasAll)entities.push(entity);
     }
 
-    return entities;
+    return entities.map(entity=>new EntityObject(entity,this));
   }
 }

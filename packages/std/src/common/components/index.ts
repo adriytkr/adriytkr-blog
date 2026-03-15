@@ -1,20 +1,10 @@
 export * from './Transform';
-export * from './Velocity';
-export * from './Acceleration';
+export * from './Hierarchy';
 
 export * from './ActiveCameraTag';
 
-export * from './Hierarchy';
-
 export * from './AnimationGroup';
 
-export * from './Alpha';
-
-export * from './Name';
-
-export * from './HiddenFlag';
-export * from './DirtyTag';
-
-export * from './Renderable';
+export * from './GeometryBuffer';
 
 export * from './math/';
