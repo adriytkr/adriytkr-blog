@@ -1,22 +1,19 @@
 <script setup lang="ts">
-import { derive,Node,watch } from '@adriytkr/core';
+import { derive,InternalNode,watch } from '@adriytkr/core';
 
 const canvasRef=ref<HTMLCanvasElement|null>(null);
 
-const root=new Node();
-const parent=new Node();
-const child=new Node();
+const root=new InternalNode();
+const parent=new InternalNode();
+const child=new InternalNode();
 root.add(parent);
 parent.add(child);
 
-const et=new Node();
-
-child.position.x.bind(
-  derive([et.position.x],()=>et.position.x.value*2),
-);
-
-et.position.x.value=30;
-console.log(child.position.x);
+parent.rotation.z.value=Math.PI/2;
+parent.position.x.value=300;
+const brother=child.clone();
+child.position.x.value=100;
+console.log(parent.worldPosition,child.worldPosition,brother.worldPosition);
 
 onMounted(()=>{
   if(canvasRef.value===null)return;
