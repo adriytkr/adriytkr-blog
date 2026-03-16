@@ -7,19 +7,19 @@ export class Derive<T> extends BaseSignal<T>{
   private m_getter:()=>T;
 
   public constructor(
-    deps:(Signal<any>|Derive<any>)[],
+    deps:(Signal<any>|Derive<any>|null)[],
     getter:()=>T,
   ){
     super(getter());
     this.m_getter=getter;
-    this.m_deps=deps;
+    this.m_deps=deps.filter(dep=>dep!==null);
 
     const update=()=>{
-      this.m_dirty = true;
+      this.m_dirty=true;
       this.m_subscribers.forEach(fn=>fn());
     };
 
-    for(const dep of deps)
+    for(const dep of this.m_deps)
       dep.subscribe(update);
   }
 
