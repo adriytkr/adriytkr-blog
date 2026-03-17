@@ -22,14 +22,63 @@ class GameObject{
   }
 }
 
+class Vector2{
+  private m_x:number;
+  private m_y:number;
+  private m_owner:GameObject;
+  private m_name:string;
+
+  public constructor(
+    owner:GameObject,
+    name:string,
+    x:number=0,
+    y:number=0
+  ){
+    this.m_owner=owner;
+    this.m_name=name;
+    this.m_x=x;
+    this.m_y=y;
+  }
+
+  public get x(){
+    return this.m_x;
+  }
+
+  public set x(val:number){
+    this.m_x=val;
+    this.m_owner.notify(`${this.m_name}.x`,val);
+    this.m_owner.notify(this.m_name, this);
+  }
+
+  public get y(){
+    return this.m_y;
+  }
+
+  public set y(val:number){
+    this.m_y=val;
+    this.m_owner.notify(`${this.m_name}.y`,val);
+    this.m_owner.notify(this.m_name,this);
+  }
+
+  public set(x:number,y:number){
+    this.m_x=x;
+    this.m_y=y;
+    this.m_owner.notify(`${this.m_name}.x`,x);
+    this.m_owner.notify(`${this.m_name}.y`,y);
+    this.m_owner.notify(this.m_name,this);
+  }
+}
+
 class Square extends GameObject{
   private m_side:number;
   private m_color:number;
+  public position:Vector2;
 
-  constructor(side:number,color:number) {
+  constructor(side:number,color:number){
     super();
     this.m_side=side;
     this.m_color=color;
+    this.position=new Vector2(this,'position',0,0);
   }
 
   public get side(){
@@ -45,7 +94,7 @@ class Square extends GameObject{
     return this.m_color;
   }
 
-  set color(val:number){
+  public set color(val:number){
     this.m_color=val;
     this.notify('color',val);
   }
@@ -97,10 +146,11 @@ function bindSquare(square:Square,graphics:PIXI.Graphics){
   redraw();
 
   square.watch('side',redraw);
+  square.watch('color',(c)=>graphics.tint=c);
 
-  square.watch('color',(c)=>{
-    graphics.tint=c; 
-  });
+  square.watch('position.x',(newX)=>graphics.x=newX);
+  square.watch('position.y',(newY)=>graphics.y=newY);
+  square.watch('position',(pos:Vector2)=>graphics.position.set(pos.x, pos.y));
 }
 
 onMounted(async()=>{
@@ -124,11 +174,12 @@ onMounted(async()=>{
   function loop(time:number){
     const delta=(time-lastTime)/1000;
     lastTime=time;
+    square.position.x+=10;
     app.render(root);
     requestAnimationFrame(loop);
   }
 
-  requestAnimationFrame(loop);
+  // requestAnimationFrame(loop);
 });
 </script>
 
