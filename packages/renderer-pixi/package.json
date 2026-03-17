@@ -1,0 +1,13 @@
+{
+  "name":"@adriytkr/renderer-pixi",
+  "version":"*",
+  "private":true,
+  "exports":{
+    ".":"./src/index.ts",
+    "./*":"./src/*.ts"
+  },
+  "dependencies":{
+    "@adriytkr/core":"*",
+    "@adriytkr/math":"*"
+  }
+}

@@ -1,37 +1,47 @@
-export type Subscriber<T>=(value:T)=>void;
+import type { Subscriber } from './types';
 
 export class Signal<T>{
-  private m_value:T;
-  private m_subscribers=new Set<Subscriber<T>>();
+  private m_subscribers?:Set<Subscriber<T>>;
+  private m_isNotifying=false;
 
-  public constructor(value:T){
-    this.m_value=value;
-  }
+  public constructor(protected m_value:T){}
 
   public get value():T{
     return this.m_value;
   }
 
-  public set value(newValue:T){
-    if(this.value===newValue)return;
-
-    this.m_value=newValue;
-    this.m_subscribers.forEach(fn=>fn(this.m_value));
+  public set value(val:T){
+    this.set(val);
   }
 
-  public subscribe(subscriber:Subscriber<T>):()=>void{
-    this.m_subscribers.add(subscriber);
-    return ()=>this.unsubscribe(subscriber);
+  protected set(value:T):void{
+    if(this.m_value===value)return;
+
+    this.m_value=value;
+    this.notifySubscribers();
   }
 
-  private unsubscribe(subscriber:Subscriber<T>):void{
-    this.m_subscribers.delete(subscriber);
+  // Observer Pattern
+  public subscribe(fn:Subscriber<T>):()=>void{
+    if(this.m_subscribers===undefined)this.m_subscribers=new Set();
+    this.m_subscribers.add(fn);
+
+    return ()=>this.unsubscribe(fn);
   }
 
-  public bind(other:Signal<T>):()=>void{
-    this.value=other.value;
-    return other.subscribe(v=>{
-      this.value=v;
-    });
+  public unsubscribe(fn:Subscriber<T>):void{
+    this.m_subscribers?.delete(fn);
+  }
+
+  public notifySubscribers(){
+    if(this.m_isNotifying)
+      throw new Error("Circular Dependency Detected: A loop was found in the signal graph.");
+
+    this.m_isNotifying=true;
+    try{
+      this.m_subscribers?.forEach(fn=>fn(this.value));
+    }finally{
+      this.m_isNotifying=false;
+    }
   }
 }
