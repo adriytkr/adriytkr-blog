@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import * as PIXI from 'pixi.js';
 
-import { Square } from '@adriytkr/math';
+import { Square,Animator, ShiftAnimation } from '@adriytkr/math';
 import { Scene,SquareView } from '@adriytkr/renderer-pixi';
 
 const canvasRef=ref<HTMLCanvasElement|null>(null);
 
-let scene:Scene;;
+let scene:Scene;
+const animator=new Animator();
 const square=new Square(100,'red');
 
 onMounted(async()=>{
@@ -29,14 +30,19 @@ onMounted(async()=>{
 
   scene.add(square);
 
-  // app.start();
+  app.start();
   app.ticker.add((ticker)=>{
-    const delta=ticker.deltaTime;
+    const delta=ticker.elapsedMS;
 
-    square.position.x$.value+=10*delta;
+    // square.position.x$.value+=10*delta;
+    animator.update(delta);
     app.render();
   });
 });
+
+function animate():void{
+  animator.add(new ShiftAnimation(square,{x:50,y:50},3000));
+}
 
 function remove():void{
   scene.remove(square);
@@ -46,6 +52,7 @@ function remove():void{
 <template>
   <h1>Hello, World!</h1>
   <canvas ref="canvasRef"></canvas>
+  <button @click="animate">Animate</button>
   <button @click="remove">Remove</button>
 </template>
 
