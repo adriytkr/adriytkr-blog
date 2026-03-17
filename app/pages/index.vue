@@ -3,155 +3,215 @@ import * as PIXI from 'pixi.js';
 
 const canvasRef=ref<HTMLCanvasElement|null>(null);
 
-type Subscriber=(value:any)=>void;
+type Subscriber<T>=(val:T)=>void;
 
-class GameObject{
-  private m_watchers:Map<string,Subscriber[]>=new Map();
+class Signal<T>{
+  private m_subscribers?:Set<Subscriber<T>>;
+  private m_isNotifying=false;
 
-  public watch(property:string,fn:Subscriber){
-    if(!this.m_watchers.has(property))
-      this.m_watchers.set(property,[]);
+  public constructor(protected m_value:T){}
 
-    this.m_watchers.get(property)!.push(fn);
+  public subscribe(fn:Subscriber<T>):()=>void{
+    if(this.m_subscribers===undefined)this.m_subscribers=new Set();
+    this.m_subscribers.add(fn);
+
+    return ()=>this.unsubscribe(fn);
   }
 
-  public notify(property:string,value:any){
-    const watchers=this.m_watchers.get(property);
-    if(watchers)
-      watchers.forEach(fn=>fn(value));
+  public unsubscribe(fn:Subscriber<T>):void{
+    this.m_subscribers?.delete(fn);
+  }
+
+  public get value():T{
+    return this.m_value;
+  }
+
+  public set value(val:T){
+    this.set(val);
+  }
+
+  protected set(value:T):void{
+    if(this.m_value===value)return;
+
+    this.m_value=value;
+    this.notifySubscribers();
+  }
+
+  public notifySubscribers(){
+    if(this.m_isNotifying)
+      throw new Error("Circular Dependency Detected: A loop was found in the signal graph.");
+
+    this.m_isNotifying=true;
+    try{
+      this.m_subscribers?.forEach(fn=>fn(this.value));
+    }finally{
+      this.m_isNotifying=false;
+    }
   }
 }
 
-class Vector2{
-  private m_x:number;
-  private m_y:number;
-  private m_owner:GameObject;
-  private m_name:string;
+class Computed<T> extends Signal<T>{
+  private m_formula:()=>T;
+  private m_isDirty=true;
 
-  public constructor(
-    owner:GameObject,
-    name:string,
-    x:number=0,
-    y:number=0
+  constructor(
+    formula:()=>T,
+    dependencies:Signal<any>[],
   ){
-    this.m_owner=owner;
-    this.m_name=name;
-    this.m_x=x;
-    this.m_y=y;
+    super(undefined as any);
+    this.m_formula=formula;
+
+    dependencies.forEach(dep=>{
+      dep.subscribe(()=>{
+        if(!this.m_isDirty){
+          this.m_isDirty=true;
+          this.notifySubscribers();
+        }
+      });
+    });
   }
 
-  public get x(){
-    return this.m_x;
+  public override get value():T{
+    if(this.m_isDirty){
+      this.m_value=this.m_formula();
+      this.m_isDirty=false;
+    }
+
+    return this.m_value;
   }
 
-  public set x(val:number){
-    this.m_x=val;
-    this.m_owner.notify(`${this.m_name}.x`,val);
-    this.m_owner.notify(this.m_name, this);
+  public override set value(val:T){
+    throw Error('Cannot change value of computed');
   }
+}
 
-  public get y(){
-    return this.m_y;
-  }
+abstract class GameObject{
+  public zIndex$=new Signal(0);
+  public position=new Vector2(0,0);
+}
 
-  public set y(val:number){
-    this.m_y=val;
-    this.m_owner.notify(`${this.m_name}.y`,val);
-    this.m_owner.notify(this.m_name,this);
-  }
+class Vector2{
+  public x$=new Signal(0);
+  public y$=new Signal(0);
 
-  public set(x:number,y:number){
-    this.m_x=x;
-    this.m_y=y;
-    this.m_owner.notify(`${this.m_name}.x`,x);
-    this.m_owner.notify(`${this.m_name}.y`,y);
-    this.m_owner.notify(this.m_name,this);
+  public constructor(x:number,y:number){
+    this.x$.value=x;
+    this.y$.value=y;
   }
 }
 
 class Square extends GameObject{
-  private m_side:number;
-  private m_color:number;
-  public position:Vector2;
+  public side$=new Signal(0);
+  public color$=new Signal('');
 
-  constructor(side:number,color:number){
+  public constructor(side:number,color:string){
     super();
-    this.m_side=side;
-    this.m_color=color;
-    this.position=new Vector2(this,'position',0,0);
-  }
-
-  public get side(){
-    return this.m_side;
-  }
-
-  public set side(val:number){
-    this.m_side=val;
-    this.notify('side',val);
-  }
-
-  public get color(){
-    return this.m_color;
-  }
-
-  public set color(val:number){
-    this.m_color=val;
-    this.notify('color',val);
+    this.side$.value=side;
+    this.color$.value=color;
   }
 }
 
-// function createConstraint(dependencies:GameObject[],update:()=>void){
-//   update();
+abstract class View{
+  public graphics=new PIXI.Graphics();
 
-//   dependencies.forEach(dependency=>{
-//     dependency.subscribe(update);
-//   });
-// }
-
-// const pointA=new Point(0,0);
-// const pointB=new Point(10,10);
-
-// function midpoint(pointA:Point,pointB:Point){
-//   const mid=new Point();
-
-//   createConstraint([pointA,pointB],()=>{
-//     mid.x=(pointA.x+pointB.x)/2;
-//     mid.y=(pointA.y+pointB.y)/2;
-//   });
-
-//   return mid;
-// }
-
-// const m=midpoint(pointA,pointB);
-
-const mySquare=new Square(50,0xff0000);
-
-mySquare.watch('color',(newColor)=>{
-  console.log(`The square is now ${newColor.toString(16)}!`);
-});
-
-mySquare.side=100;
-mySquare.color=0x00ff00;
-
-function update(){
-  mySquare.color=0xff0000;
+  public abstract init():void;
+  public abstract redraw():void;
+  public abstract destroy():void;
 }
 
-function bindSquare(square:Square,graphics:PIXI.Graphics){
-  const redraw=()=>{
-    graphics.clear();
-    graphics.rect(0,0,square.side,square.side);
-    graphics.fill();
-  };
-  redraw();
+class SquareView extends View{
+  private m_model:Square;
+  private unsubscribers:(()=>void)[]=[];
 
-  square.watch('side',redraw);
-  square.watch('color',(c)=>graphics.tint=c);
+  public constructor(model:Square){
+    super();
+    this.m_model=model;
+  }
 
-  square.watch('position.x',(newX)=>graphics.x=newX);
-  square.watch('position.y',(newY)=>graphics.y=newY);
-  square.watch('position',(pos:Vector2)=>graphics.position.set(pos.x, pos.y));
+  public init():void{
+    this.unsubscribers.push(this.m_model.side$.subscribe(this.redraw));
+    this.unsubscribers.push(this.m_model.color$.subscribe((c)=>this.graphics.tint=c));
+    this.unsubscribers.push(this.m_model.position.x$.subscribe((newX)=>this.graphics.x=newX));
+    this.unsubscribers.push(this.m_model.position.y$.subscribe((newY)=>this.graphics.y=newY));
+  }
+
+  public redraw():void{
+    this.graphics.clear();
+    this.graphics.rect(
+      0,
+      0,
+      this.m_model.side$.value,
+      this.m_model.side$.value,
+    );
+    this.graphics.fill();
+  }
+
+  public destroy():void{
+    this.unsubscribers.forEach(unsub=>unsub());
+    this.unsubscribers.length=0;
+    this.graphics.destroy({children:true,texture:true});
+  }
 }
+
+type Constructor<T>=new(...args:any[])=>T;
+
+class Scene{
+  private m_app:PIXI.Application;
+  private m_registry = new Map<Constructor<GameObject>,Constructor<View>>();
+  private m_activePairs=new Map<GameObject,View>(); 
+
+  public constructor(app:PIXI.Application){
+    this.m_app=app;
+  }
+
+  public register<G extends GameObject,V extends View>(
+    gameClass:Constructor<G>,
+    viewClass:Constructor<V>,
+  ):void{
+    this.m_registry.set(gameClass,viewClass);
+  }
+
+  private getViewConstructor(gameClass:any):Constructor<View>|null{
+    if(this.m_registry.has(gameClass))
+      return this.m_registry.get(gameClass)!;
+
+    const parentClass=Object.getPrototypeOf(gameClass);
+    if(parentClass&&parentClass!==Object)
+      return this.getViewConstructor(parentClass);
+
+    return null;
+  }
+
+  public add(gameObject:GameObject){
+    if(this.m_activePairs.has(gameObject)){
+      console.warn('Object already exists on the scene');
+      return;
+    }
+
+    const ViewClass=this.getViewConstructor(gameObject.constructor);
+
+    if(ViewClass===null)
+      throw Error(`No View registered for ${gameObject.constructor.name} or its parent`);
+
+    const view=new ViewClass(gameObject);
+    view.init();
+    view.redraw();
+    this.m_activePairs.set(gameObject,view);
+    this.m_app.stage.addChild(view.graphics);
+  }
+
+  public remove(gameObject:GameObject):void{
+    const view=this.m_activePairs.get(gameObject);
+
+    if(view!==undefined){
+      view.destroy();
+      this.m_activePairs.delete(gameObject);
+    }
+  }
+}
+
+let scene:Scene;
+const square=new Square(100,'red');
 
 onMounted(async()=>{
   if(canvasRef.value===null)return;
@@ -159,34 +219,38 @@ onMounted(async()=>{
   canvasRef.value.width=canvasRef.value.clientWidth;
   canvasRef.value.height=canvasRef.value.clientHeight;
 
-  const app=await PIXI.autoDetectRenderer({
+  const app=new PIXI.Application();
+
+  await app.init({
     canvas:canvasRef.value,
     width:canvasRef.value.width,
     height:canvasRef.value.height,
+    autoStart:false,
   });
-  const root=new PIXI.Container();
-  const squareGraphics=new PIXI.Graphics();
-  const square=new Square(100,0xff0000);
-  root.addChild(squareGraphics);
-  bindSquare(square,squareGraphics);
 
-  let lastTime=0;
-  function loop(time:number){
-    const delta=(time-lastTime)/1000;
-    lastTime=time;
-    square.position.x+=10;
-    app.render(root);
-    requestAnimationFrame(loop);
-  }
+  scene=new Scene(app);
+  scene.register(Square,SquareView);
 
-  // requestAnimationFrame(loop);
+  scene.add(square);
+
+  app.start();
+  app.ticker.add((ticker)=>{
+    const delta=ticker.deltaTime;
+
+    square.position.x$.value+=10*delta;
+    app.render();
+  });
 });
+
+function remove():void{
+  scene.remove(square);
+}
 </script>
 
 <template>
   <h1>Hello, World!</h1>
   <canvas ref="canvasRef"></canvas>
-  <button @click="update">update</button>
+  <button @click="remove">Remove</button>
 </template>
 
 <style scoped>
