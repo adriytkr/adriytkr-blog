@@ -16,7 +16,7 @@ export class Hierarchy{
 
   public set parent(node:InternalNode|null){
     this.m_parent=node;
-  }
+  ;}
 
   public get children():InternalNode[]{
     return this.m_children;
@@ -31,7 +31,8 @@ export class Hierarchy{
   }
 
   public addChild(child:InternalNode):void{
-    if(child.parent!==null)
+    console.log('hi: '+child.parent);
+    if(child.parent!==null&&child.parent!==undefined)
       throw Error('Node already has a parent');
 
     this.m_children.push(child);

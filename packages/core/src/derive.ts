@@ -6,10 +6,7 @@ export function derive<T>(
 ):Signal<T>{
   const result=new Signal(compute());
 
-  const update=()=>{
-    console.log('hi');
-    result.value=compute();
-  };
+  const update=()=>result.value=compute();
 
   dependencies.forEach(signal=>{
     signal.subscribe(update);

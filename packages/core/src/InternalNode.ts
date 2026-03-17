@@ -56,28 +56,16 @@ export class InternalNode{
   }
 
   // Position
-  public get worldPosition():vec3{
-    return this.m_transform.worldPosition;
-  }
-
   public get position(){
     return this.m_transform.position;
   }
 
   // Scale
-  public get worldScale():vec3{
-    return this.m_transform.worldScale;
-  }
-
   public get scale(){
     return this.m_transform.scale;
   }
 
   // Rotation
-  public get worldRotation():quat{
-    return this.m_transform.worldRotation;
-  }
-
   public get rotation(){
     return this.m_transform.rotation;
   }

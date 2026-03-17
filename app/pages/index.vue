@@ -1,19 +1,72 @@
 <script setup lang="ts">
-import { derive,InternalNode,watch } from '@adriytkr/core';
-
 const canvasRef=ref<HTMLCanvasElement|null>(null);
 
-const root=new InternalNode();
-const parent=new InternalNode();
-const child=new InternalNode();
-root.add(parent);
-parent.add(child);
+type Subscriber=()=>void;
 
-parent.rotation.z.value=Math.PI/2;
-parent.position.x.value=300;
-const brother=child.clone();
-child.position.x.value=100;
-console.log(parent.worldPosition,child.worldPosition,brother.worldPosition);
+class GameObject{
+  private m_subscribers:Subscriber[]=[];
+
+  public subscribe(fn:Subscriber){
+    this.m_subscribers.push(fn);
+  }
+  
+  public notify(){
+    this.m_subscribers.forEach(fn=>fn());
+  }
+}
+
+class Point extends GameObject{
+  private m_x:number;
+  private m_y:number;
+
+  public constructor(x:number=0,y:number=0){
+    super();
+    this.m_x=x;
+    this.m_y=y;
+  }
+
+  public get x():number{
+    return this.m_x;
+  }
+
+  public set x(val:number){
+    this.m_x=val;
+    this.notify();
+  }
+
+  public get y():number{
+    return this.m_y;
+  }
+
+  public set y(val:number){
+    this.m_y=val;
+    this.notify();
+  }
+}
+
+function createConstraint(dependencies:GameObject[],update:()=>void){
+  update();
+
+  dependencies.forEach(dependency=>{
+    dependency.subscribe(update);
+  });
+}
+
+const pointA=new Point(0,0);
+const pointB=new Point(10,10);
+
+function midpoint(pointA:Point,pointB:Point){
+  const mid=new Point();
+
+  createConstraint([pointA,pointB],()=>{
+    mid.x=(pointA.x+pointB.x)/2;
+    mid.y=(pointA.y+pointB.y)/2;
+  });
+
+  return mid;
+}
+
+const m=midpoint(pointA,pointB);
 
 onMounted(()=>{
   if(canvasRef.value===null)return;

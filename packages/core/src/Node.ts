@@ -48,7 +48,7 @@ export class Node{
 
   // Position
   public get worldPosition(){
-    return this.m_internal.worldPosition;
+    return this.m_internal.transform.worldPosition;
   }
 
   public get position(){
@@ -76,7 +76,7 @@ export class Node{
 
   // Scale
   public get worldScale(){
-    return this.m_internal.worldScale;
+    return this.m_internal.transform.worldScale;
   }
 
   public get scale(){
@@ -104,7 +104,7 @@ export class Node{
 
   // Rotation
   public get worldRotation(){
-    return this.m_internal.worldRotation;
+    return this.m_internal.transform.worldRotation;
   }
 
   public get rotation(){
