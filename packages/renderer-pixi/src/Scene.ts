@@ -13,6 +13,10 @@ export class Scene{
     this.m_app=app;
   }
 
+  public get stage():PIXI.Container{
+    return this.m_app.stage;
+  }
+
   public register<G extends GameObject,V extends View>(
     gameClass:Constructor<G>,
     viewClass:Constructor<V>,

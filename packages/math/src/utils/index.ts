@@ -1,2 +1,7 @@
 export * from './Vector2';
-export * from './PolygonStyle';
+export * from './Vector3';
+
+export * from './animations';
+
+export * from './styles/ClosedStyle';
+export * from './styles/PolylineStyle';

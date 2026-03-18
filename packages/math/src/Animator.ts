@@ -11,12 +11,20 @@ export class Animator{
     for(let i=this.m_animations.length-1;i>=0;i--){
       const animation=this.m_animations[i]!;
 
-      animation.elapsed+=delta;
-      const progress=animation.elapsed/animation.duration;
-      const alpha=Math.min(1,progress);
-      animation.update(alpha);
+      if(!animation.hasStarted){
+        animation.setup();
+        if(animation.onStart)animation.onStart();
+      }
 
-      if(alpha===1)this.m_animations.splice(i,1);
+      animation.elapsed+=delta;
+      animation.tick();
+
+      if(animation.hasEnded){
+        this.m_animations.splice(i,1);
+        if(animation.onComplete)animation.onComplete();
+      }
     }
   }
+
+  public play(){}
 }

@@ -3,7 +3,6 @@ import { Square } from '@adriytkr/math';
 
 export class SquareView extends View{
   private m_model:Square;
-  private unsubscribers:(()=>void)[]=[];
 
   public constructor(model:Square){
     super();
@@ -26,11 +25,5 @@ export class SquareView extends View{
       this.m_model.side$.value,
     );
     this.graphics.fill();
-  }
-
-  public destroy():void{
-    this.unsubscribers.forEach(unsub=>unsub());
-    this.unsubscribers.length=0;
-    this.graphics.destroy({children:true,texture:true});
   }
 }

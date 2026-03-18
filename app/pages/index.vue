@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import * as PIXI from 'pixi.js';
 
-import { Square,Animator, ShiftAnimation } from '@adriytkr/math';
-import { Scene,SquareView } from '@adriytkr/renderer-pixi';
+import {
+  Animator,
+  Camera,
+  Arc,
+  Circle,
+} from '@adriytkr/math';
+
+import { ArcView,Scene } from '@adriytkr/renderer-pixi';
 
 const canvasRef=ref<HTMLCanvasElement|null>(null);
 
 let scene:Scene;
 const animator=new Animator();
-const square=new Square(100,'red');
+
+const camera=new Camera(20);
 
 onMounted(async()=>{
   if(canvasRef.value===null)return;
@@ -26,9 +33,33 @@ onMounted(async()=>{
   });
 
   scene=new Scene(app);
-  scene.register(Square,SquareView);
+  scene.register(Arc,ArcView);
 
-  scene.add(square);
+  const arc=new Circle(0,0,{
+    radius:5,
+    stroke:'red',
+    strokeWidth:1,
+    fill:'white',
+    opacity:1,
+  });
+
+  scene.add(arc);
+
+  scene.stage.scale.set(camera.zoom$.value);
+  scene.stage.x=app.screen.width/2;
+  scene.stage.y=app.screen.height/2;
+
+  camera.zoom$.subscribe(v=>{
+    scene.stage.scale.set(v);
+  });
+
+  camera.position.x$.subscribe(x=>{
+    scene.stage.x=app.screen.width/2+x;
+  });
+
+  camera.position.y$.subscribe(y=>{
+    scene.stage.y=app.screen.height/2+y;
+  });
 
   app.start();
   app.ticker.add((ticker)=>{
@@ -38,14 +69,55 @@ onMounted(async()=>{
     animator.update(delta);
     app.render();
   });
+
+  canvasRef.value.addEventListener('wheel',handleZoom);
+  canvasRef.value.addEventListener('mousedown',handleMouseDown);
+  canvasRef.value.addEventListener('mouseup',handleMouseUp);
+  canvasRef.value.addEventListener('mousemove',handleMouseMove);
 });
 
-function animate():void{
-  animator.add(new ShiftAnimation(square,{x:50,y:50},3000));
+onUnmounted(()=>{
+  if(canvasRef.value===null)return;
+
+  canvasRef.value.removeEventListener('wheel',handleZoom);
+});
+
+function animate():void{}
+
+function remove():void{}
+
+let isDragging=false;
+let lastX=0;
+let lastY=0;
+
+function handleMouseDown(event:MouseEvent):void{
+  isDragging=true;
+  lastX=event.clientX;
+  lastY=event.clientY;
 }
 
-function remove():void{
-  scene.remove(square);
+function handleMouseUp():void{
+  isDragging=false;
+}
+
+function handleMouseMove(event:MouseEvent):void{
+  if(!isDragging)return;
+
+  const dx=event.clientX-lastX;
+  const dy=event.clientY-lastY;
+
+  lastX=event.clientX;
+  lastY=event.clientY;
+
+  camera.position.x$.value+=dx/camera.zoom$.value;
+  camera.position.y$.value+=dy/camera.zoom$.value;
+}
+
+function handleZoom(event:WheelEvent):void{
+  const delta=event.deltaY;
+
+  if(delta<0)camera.zoom$.value*=1.1;
+  else camera.zoom$.value/=1.1;
 }
 </script>
 
