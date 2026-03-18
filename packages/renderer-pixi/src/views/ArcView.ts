@@ -20,6 +20,9 @@ export class ArcView extends View{
 
     g.clear();
 
+    g.x=m.position.x$.value;
+    g.y=m.position.y$.value;
+
     g.setStrokeStyle({
       color:m.style.stroke$.value,
       width:m.style.strokeWidth$.value,
@@ -29,15 +32,25 @@ export class ArcView extends View{
       color:m.style.fill$.value,
     });
 
+    g.moveTo(0,0);
     g.arc(
       0,
       0,
       m.radius$.value,
       m.startAngle$.value,
-      m.endAngle$.value,
+      m.endAngle$.value*(m.clockwise$.value?1:-1),
+      !m.clockwise$.value,
     );
-
-    g.stroke();
     g.fill();
+
+    g.arc(
+      0,
+      0,
+      m.radius$.value,
+      m.startAngle$.value,
+      m.endAngle$.value*(m.clockwise$.value?1:-1),
+      !m.clockwise$.value,
+    );
+    g.stroke();
   }
 }

@@ -15,7 +15,7 @@ const canvasRef=ref<HTMLCanvasElement|null>(null);
 let scene:Scene;
 const animator=new Animator();
 
-const camera=new Camera(20);
+const camera=new Camera({zoom:10});
 
 onMounted(async()=>{
   if(canvasRef.value===null)return;
@@ -35,31 +35,22 @@ onMounted(async()=>{
   scene=new Scene(app);
   scene.register(Arc,ArcView);
 
-  const arc=new Circle(0,0,{
-    radius:5,
-    stroke:'red',
-    strokeWidth:1,
-    fill:'white',
-    opacity:1,
-  });
-
-  scene.add(arc);
-
   scene.stage.scale.set(camera.zoom$.value);
-  scene.stage.x=app.screen.width/2;
-  scene.stage.y=app.screen.height/2;
+  updateStagePosition();
 
   camera.zoom$.subscribe(v=>{
     scene.stage.scale.set(v);
+    updateStagePosition(); 
   });
 
-  camera.position.x$.subscribe(x=>{
-    scene.stage.x=app.screen.width/2+x;
-  });
+  camera.position.x$.subscribe(updateStagePosition);
+  camera.position.y$.subscribe(updateStagePosition);
 
-  camera.position.y$.subscribe(y=>{
-    scene.stage.y=app.screen.height/2+y;
-  });
+  function updateStagePosition(){
+    const zoom=camera.zoom$.value;
+    scene.stage.x=(app.screen.width/2)-(camera.position.x$.value*zoom);
+    scene.stage.y=(app.screen.height/2)-(camera.position.y$.value*zoom);
+  }
 
   app.start();
   app.ticker.add((ticker)=>{
@@ -82,7 +73,8 @@ onUnmounted(()=>{
   canvasRef.value.removeEventListener('wheel',handleZoom);
 });
 
-function animate():void{}
+function animate():void{
+}
 
 function remove():void{}
 
@@ -109,8 +101,8 @@ function handleMouseMove(event:MouseEvent):void{
   lastX=event.clientX;
   lastY=event.clientY;
 
-  camera.position.x$.value+=dx/camera.zoom$.value;
-  camera.position.y$.value+=dy/camera.zoom$.value;
+  camera.position.x$.value-=dx/camera.zoom$.value;
+  camera.position.y$.value-=dy/camera.zoom$.value;
 }
 
 function handleZoom(event:WheelEvent):void{
