@@ -15,15 +15,4 @@
       "path": "./.nuxt/tsconfig.node.json"
     }
   ],
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@adriytkr/core": ["packages/core/src/index.ts"],
-      "@adriytkr/core/*": ["packages/core/src/*.ts"],
-      "@adriytkr/math": ["packages/math/src/index.ts"],
-      "@adriytkr/math/*": ["packages/math/src/*.ts"],
-      "@adriytkr/renderer-pixi": ["packages/renderer-pixi/src/index.ts"],
-      "@adriytkr/renderer-pixi/*": ["packages/renderer-pixi/src/*.ts"],
-    }
-  }
 }
