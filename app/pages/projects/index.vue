@@ -1,13 +1,17 @@
 <script setup lang="ts">
+import type { Collections } from '@nuxt/content';
+
 import ProjectCard from '~/components/base/ProjectCard.vue';
+
 import { PLACEHOLDER_IMAGE_PATH } from '~/constants/projects';
+import { normalizeCollectionName } from '~/utils/content';
 
 const {t,locale}=useI18n();
 
 const {data:projects}=await useAsyncData(
   ``,
   async()=>{
-    const normalizedCollectionName=normalizeCollectionName(locale.value);
+    const normalizedCollectionName=normalizeCollectionName('projects',locale.value) as keyof Collections;
     const projects=await queryCollection(normalizedCollectionName).all();
 
     return projects;

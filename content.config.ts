@@ -1,23 +1,41 @@
-import { defineContentConfig, defineCollection,z } from '@nuxt/content'
+import { defineContentConfig } from '@nuxt/content'
+import { defineCollection,z } from '@nuxt/content';
 
 import type {CustomLocale} from './app/types/i18n';
+import {normalizeCollectionName} from './app/utils/content';
 
-const projectSchema=z.object({
+export const projectSchema=z.object({
   title:z.string(),
   description:z.string(),
   thumbnail:z.string().optional(),
 });
 
-const createProjectCollection=(locale:CustomLocale)=>defineCollection({
+export const createProjectCollection=(locale:CustomLocale)=>defineCollection({
   type:'page',
-  source:`${locale}/**/*.md`,
+  source:`${locale}/projects/**/*.md`,
   schema:projectSchema,
+});
+
+export const recommendationSchema=z.object({
+  title:z.string(),
+  description:z.string(),
+});
+
+export const createRecommendationSchema=(locale:CustomLocale)=>defineCollection({
+  type:'page',
+  source:`${locale}/recommendations/**/*.md`,
+  schema:projectSchema,
+});
+
+const makeCollection=(locale:CustomLocale)=>({
+  [normalizeCollectionName('projects',locale)]:createProjectCollection(locale),
+  [normalizeCollectionName('recommendations',locale)]:createRecommendationSchema(locale),
 });
 
 export default defineContentConfig({
   collections: {
-    'projects_en':createProjectCollection('en'),
-    'projects_pt_BR':createProjectCollection('pt-BR'),
-    'projects_de_DE':createProjectCollection('de-DE'),
+    ...makeCollection('en'),
+    ...makeCollection('pt-BR'),
+    ...makeCollection('de-DE'),
   }
 })

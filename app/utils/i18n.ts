@@ -1,5 +1,3 @@
-import type { Collections } from '@nuxt/content';
-
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -17,6 +15,3 @@ export function fetchLocaleFiles(locale:CustomLocale):string[]{
     return [];
   }
 }
-
-export const normalizeCollectionName=(locale:CustomLocale):keyof Collections=>
-  `projects_${locale.replace('-','_')}` as keyof Collections;
