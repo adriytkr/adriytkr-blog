@@ -1,11 +1,26 @@
 @import "tailwindcss";
 
 @theme{
+  --app-bg-color:rgb(255 255 255);
+  --app-text-color:rgb(0 0 0);
   --color-primary:rgb(255 0 0);
 }
 
 @layer base {
   html[data-theme="dark"]{
-    --color-primary:rgb(0 0 0);
+    --app-bg-color:rgb(26 26 26);
+    --app-text-color:rgb(255 255 255);
+    --color-primary:rgb(255 255 255);
+    color-scheme: dark;
   }
+}
+
+body{
+  background-color:var(--app-bg-color);
+}
+
+body,
+input,
+button{
+  color:var(--app-text-color);
 }
