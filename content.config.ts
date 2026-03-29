@@ -1,7 +1,7 @@
 import { defineContentConfig } from '@nuxt/content'
 import { defineCollection,z } from '@nuxt/content';
 
-import type {CustomLocale} from './app/types/i18n';
+import type {CustomLocale,RecommendationStatus} from './app/types/i18n';
 import {normalizeCollectionName} from './app/utils/content';
 
 export const projectSchema=z.object({
@@ -16,15 +16,21 @@ export const createProjectCollection=(locale:CustomLocale)=>defineCollection({
   schema:projectSchema,
 });
 
+const status:RecommendationStatus=['reviewed','pending'];
+
 export const recommendationSchema=z.object({
   title:z.string(),
   description:z.string(),
+  thumbnail:z.string().optional(),
+  author:z.string(),
+  categories:z.array(z.string()),
+  status:z.enum(status).default('pending'),
 });
 
 export const createRecommendationSchema=(locale:CustomLocale)=>defineCollection({
   type:'page',
   source:`${locale}/recommendations/**/*.md`,
-  schema:projectSchema,
+  schema:recommendationSchema,
 });
 
 const makeCollection=(locale:CustomLocale)=>({

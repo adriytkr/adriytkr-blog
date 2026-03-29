@@ -7,7 +7,10 @@ defineProps<{
 </script>
 
 <template>
-  <NuxtLinkLocale :to="to">
+  <NuxtLinkLocale
+    :to="to"
+    class="hover:scale-110 transition-transform duration-200"
+  >
     <img
       class="mb-4 w-full object-cover aspect-video"
       :src="img"
