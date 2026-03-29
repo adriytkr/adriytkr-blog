@@ -2,6 +2,11 @@
   "recommendationsPage":{
     "title":"Recommendations",
     "description":"Here are books I read and courses I watched.",
-    "search":"Search"
+    "search":{
+      "placeholder":"Search recommendations...",
+      "emptyState":"I haven't write a review for this yet",
+      "clearSearch":"Clear search",
+      "results":"No results found for {query}|1 match for {query}|{count} matches for {query}"
+    }
   }
 }

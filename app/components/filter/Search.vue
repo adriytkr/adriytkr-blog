@@ -1,5 +1,9 @@
 <script setup lang="ts">
 const searchQuery=defineModel<string>({default:''});
+
+defineProps<{
+  placeholder:string;
+}>();
 </script>
 
 <template>
@@ -8,7 +12,7 @@ const searchQuery=defineModel<string>({default:''});
       type="text"
       v-model="searchQuery"
       class="px-4 py-2 w-full border border-gray-400 rounded-sm"
-      :placeholder="$t('recommendationsPage.search')"
+      :placeholder="placeholder"
     />
   </form>
 </template>

@@ -19,7 +19,10 @@ fetch();
   <h1 class="text-5xl mb-4">{{$t('recommendationsPage.title')}}</h1>
   <p class="mb-8">{{ $t('recommendationsPage.description') }}</p>
   <div class="flex flex-col md:flex-row md:justify-between md:items-center">
-    <FilterSearch v-model="searchQuery"/>
+    <FilterSearch
+      v-model="searchQuery"
+      :placeholder="$t('recommendationsPage.search.placeholder')"
+    />
     <FilterSelectViewMode v-model="selectedViewMode"/>
   </div>
   <FilterCategory
@@ -32,11 +35,21 @@ fetch();
     :count="statusCounts"
   />
   <p v-if="filteredRecommendations.length>0" class="mb-4">
-    RESULTS: {{ filteredRecommendations.length }} Matches found
+    {{ $t(
+        'recommendationsPage.search.results',
+        {
+          count:filteredRecommendations.length,
+          query:searchQuery,
+        },
+        filteredRecommendations.length,
+      )
+    }}
   </p>
   <div class="flex flex-1 flex-col items-center justify-center" v-else>
-    <p>No results</p>
-    <button @click="reset">Clear search</button>
+    <p>{{ $t('recommendationsPage.search.emptyState') }}</p>
+    <button @click="reset">
+      {{$t('recommendationsPage.search.clearSearch')}}
+    </button>
   </div>
   <RecommendationsList
     :recommendations="filteredRecommendations"
