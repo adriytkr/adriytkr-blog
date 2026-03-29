@@ -7,7 +7,9 @@ import {normalizeCollectionName} from './app/utils/content';
 export const projectSchema=z.object({
   title:z.string(),
   description:z.string(),
+  longDescription:z.string(),
   thumbnail:z.string().optional(),
+  tags:z.array(z.string()).default([]),
 });
 
 export const createProjectCollection=(locale:CustomLocale)=>defineCollection({

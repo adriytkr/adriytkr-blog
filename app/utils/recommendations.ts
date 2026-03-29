@@ -8,7 +8,8 @@ export function isRecommendationElegible(
   const matchesQuery=
     recommendation.title?.toLowerCase().includes(query)|| 
     recommendation.author?.toLowerCase().includes(query)||
-    recommendation.description?.toLowerCase().includes(query);
+    recommendation.description?.toLowerCase().includes(query)||
+    recommendation.longDescription?.toLowerCase().includes(query);
 
   const matchesCategory=
     categories.length===0||

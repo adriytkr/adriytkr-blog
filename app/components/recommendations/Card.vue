@@ -50,13 +50,12 @@ defineProps<{
         <slot name="description"></slot>
       </div>
       <div class="flex flex-wrap gap-2 mt-2">
-        <span
+        <BaseBadge
           v-for="category in categories"
           :key="category"
-          class="px-2 py-0.5 font-bold uppercase bg-zinc-100 border border-zinc-200 text-sm"
         >
           {{ $te(`categories.${category}`) ? $t(`categories.${category}`) : category }}
-        </span>
+        </BaseBadge>
       </div>
     </div>
   </NuxtLinkLocale>
