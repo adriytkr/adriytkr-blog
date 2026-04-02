@@ -1,11 +1,10 @@
 ---
 title: Machine Learning
-description: Implementation of neutral networks and probabilistic models.
-longDescription: Experimental projects designed to explore the probabilistic and algebraic foundations of artificial intelligence.
+description: Experimental projects designed to explore the probabilistic and algebraic foundations of artificial intelligence.
 # thumbnail: '/images/bismarck.webp'
 tags:
-  - artificial-intelligence
-  - machine-learning
+  - neural-networks
+  - linear-algebra
   - python
 ---
 

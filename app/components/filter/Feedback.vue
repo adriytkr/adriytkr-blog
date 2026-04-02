@@ -1,21 +1,24 @@
 <script setup lang="ts">
-defineProps<{
+const props=defineProps<{
   matchCount:number;
   query:string;
 }>();
+
+const {t}=useI18n();
+const feedbackMessage=computed<string>(
+  ()=>t(
+    'projectsPage.search.results',
+    {
+      query:props.query,
+      count:props.matchCount,
+    },
+    props.matchCount,
+  )
+);
 </script>
 
 <template>
-  <p class="mb-4">
-    {{
-      $t(
-        'recommendationsPage.search.results',
-        {
-          count:matchCount,
-          query,
-        },
-        matchCount,
-      )
-    }}
+  <p>
+    {{feedbackMessage}}
   </p>
 </template>

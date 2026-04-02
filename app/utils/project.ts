@@ -1,20 +1,36 @@
-import type { Project } from '~/types/content';
+import type { ProjectSchema } from '~/types/content';
+import type { SortingMode } from '~/types/filter';
 
 export function isProjectElegible(
-  recommendation:Project,
+  recommendation:ProjectSchema,
   query:string,
   tags:string[],
 ):boolean{
+  const normalizedQuery=query.toLowerCase();
+
   const matchesQuery=
-    recommendation.title?.toLowerCase().includes(query)|| 
-    recommendation.description?.toLowerCase().includes(query)||
-    recommendation.longDescription?.toLowerCase().includes(query);
+    recommendation.title?.toLowerCase().includes(normalizedQuery)||
+    recommendation.description?.toLowerCase().includes(normalizedQuery);
 
-  const matchesTag=
-    tags.length===0||
-    tags.some(
-      selectedTag=>recommendation.tags?.includes(selectedTag)
-    );
+  const matchesTags=tags.some(tag=>
+    tag.includes(normalizedQuery)
+  );
 
-  return matchesQuery&&matchesTag;
+  return matchesQuery||matchesTags;
+}
+
+export function sortProjectsWithStrategy(
+  mode:SortingMode,
+  projects:ProjectSchema[],
+):ProjectSchema[]{
+  const projectsCopy=[...projects];
+
+  switch(mode){
+    case 'sorted':
+      return projectsCopy;
+    case 'unsorted':
+      return projectsCopy
+        .sort()
+        .reverse();
+  }
 }

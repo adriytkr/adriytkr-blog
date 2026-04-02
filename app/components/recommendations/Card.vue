@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { RecommendationStatus, ViewMode } from '~/types/recommendations';
+import type { RecommendationStatus, ViewMode } from '~/types/recommendation';
 
 defineProps<{
   to:string;

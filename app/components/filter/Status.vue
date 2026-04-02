@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { RecommendationStatusFilter } from '~/types/recommendations';
-import { RECOMMENDATIONS_STATUS } from '~/types/recommendations';
+import type { RecommendationStatusFilter } from '~/types/recommendation';
+import { RECOMMENDATIONS_STATUS } from '~/types/recommendation';
 
 const selectedStatus=defineModel<RecommendationStatusFilter>({default:'all'});
 

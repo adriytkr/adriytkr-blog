@@ -7,7 +7,7 @@ const {t,locale}=useI18n();
 
 const {data:project,status}=await useAsyncData(
   `project-${locale.value}`,
-  async()=>await ProjectService.getBySlug(locale.value,normalizeSlug(route.params.slug)),
+  async()=>await ProjectService.getProjectBySlug(locale.value,normalizeSlug(route.params.slug)),
   {watch:[locale]},
 );
 

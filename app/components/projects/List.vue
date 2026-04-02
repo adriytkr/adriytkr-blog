@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import { PLACEHOLDER_IMAGE_PATH } from '~/constants/projects';
-import type { Project } from '~/types/content';
-import type { ViewMode } from '~/types/recommendations';
+import { PLACEHOLDER_IMAGE_PATH } from '~/constants/config';
+
+import type { ProjectSchema } from '~/types/content';
+import type { ViewMode } from '~/types/filter';
 
 defineProps<{
-  projects:Project[];
+  projects:ProjectSchema[];
   viewMode:ViewMode;
+}>();
+
+defineEmits<{
+  (e:'select-tag',tag:string):void;
 }>();
 </script>
 
@@ -19,15 +24,23 @@ defineProps<{
   >
     <ProjectsCard
       v-for="project in projects"
-      :img="project.thumbnail??PLACEHOLDER_IMAGE_PATH"
+      :thumbnail="project.thumbnail??PLACEHOLDER_IMAGE_PATH"
       :to="`/projects/${project.stem.split('/').pop()}`"
-      :tags="project.tags??[]"
+      :tags="project.tags"
       :view-mode="viewMode"
+      @select-tag="$emit('select-tag',$event)"
     >
       <template #title>{{project.title}}</template>
       <template #description>
-        <p :class="[viewMode==='grid'?'block':'hidden']">{{project.description}}</p>
-        <p :class="[viewMode==='list'?'block':'hidden']">{{ project.longDescription }}</p>
+        <p
+          class="text-muted"
+          :class="{
+            'line-clamp-2':viewMode==='grid',
+            'line-clamp-5':viewMode==='list',
+          }"
+        >
+          {{project.description}}
+        </p>
       </template>
     </ProjectsCard>
   </div>

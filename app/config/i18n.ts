@@ -5,23 +5,23 @@ import {fetchLocaleFiles} from '../utils/i18n';
 
 export const locales:LocaleObject<CustomLocale>[]=[
   {
-    code: 'en',
-    name: 'English',
-    files: fetchLocaleFiles('en'),
+    code:'en',
+    name:'English',
+    files:fetchLocaleFiles('en'),
   },
   {
-    code: 'pt-BR',
-    name: 'Português',
-    files: fetchLocaleFiles('pt-BR'),
+    code:'pt-br',
+    name:'Português',
+    files:fetchLocaleFiles('pt-br'),
   },
   {
-    code: 'de-DE',
-    name: 'Deutsch',
-    files: fetchLocaleFiles('de-DE'),
+    code:'de-de',
+    name:'Deutsch',
+    files:fetchLocaleFiles('de-de'),
   },
 ];
 
-export const i18nConfig = {
-  defaultLocale: 'en',
+export const i18nConfig={
+  defaultLocale:'en',
   locales,
 } satisfies NuxtI18nOptions<CustomLocale>;

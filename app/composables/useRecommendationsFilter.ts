@@ -1,7 +1,7 @@
 import { RecommentationService } from '~/services/RecommendationService';
 import type { Recommendation } from '~/types/content';
-import type { ViewMode,RecommendationStatusFilter } from '~/types/recommendations';
-import { isRecommendationElegible } from '~/utils/recommendations';
+import type { ViewMode,RecommendationStatusFilter } from '~/types/recommendation';
+import { isRecommendationElegible } from '~/utils/recommendation';
 
 export function useRecommendationsFilter(){
   const {locale}=useI18n();
@@ -11,7 +11,7 @@ export function useRecommendationsFilter(){
   async function fetch(){
     const {data}=await useAsyncData(
       `recommendations-${locale.value}`,
-      async()=>await RecommentationService.getAll(locale.value),
+      async()=>await RecommentationService.getAllRecommendations(locale.value),
       {watch:[locale]},
     );
 

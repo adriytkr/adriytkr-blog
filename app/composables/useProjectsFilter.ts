@@ -1,23 +1,21 @@
-import { ProjectService } from '~/services/ProjectService';
-import type { Project } from '~/types/content';
-import type { ViewMode } from '~/types/recommendations';
-import { isProjectElegible } from '~/utils/project';
+import type { ProjectSchema } from '~/types/content';
+import type { ViewMode,SortingMode } from '~/types/filter';
+
+import {
+  isProjectElegible,
+  sortProjectsWithStrategy,
+} from '~/utils/project';
 
 export function useProjectsFilter(){
   const searchQuery=ref<string>('');
-  const selectedTags=ref<string[]>([]);
   const selectedViewMode=ref<ViewMode>('grid');
 
-  const projects=ref<Project[]>([]);
 
-  const {locale}=useI18n();
+  const {t,locale}=useI18n();
+  const projects=ref<ProjectSchema[]>([]);
 
   async function fetch(){
-    const {data}=await useAsyncData(
-      `projects-${locale.value}`,
-      async()=>await ProjectService.getAll(locale.value),
-      {watch:[locale]},
-    );
+    const {data}=await useProjects(locale);
 
     if(data.value===undefined)
       throw Error('Could not fetch projects');
@@ -25,43 +23,40 @@ export function useProjectsFilter(){
     projects.value=data.value;
   }
 
-  const filteredProjects=computed<Project[]>(()=>{
-    if(projects.value===undefined)return[];
+  const selectedSortingMode=ref<SortingMode>('sorted');
 
-    const query=searchQuery.value.toLowerCase();
+  const filteredProjects=computed<ProjectSchema[]>(()=>{
+    const result=projects.value.filter(project=>{
+      const translatedTags=project.tags.map(tag=>
+        t(`tags.${tag}`).toLowerCase()
+      );
 
-    return projects.value.filter(project=>
-      isProjectElegible(project,query,selectedTags.value),
+      return isProjectElegible(
+        project,
+        searchQuery.value,
+        translatedTags,
+      );
+    });
+
+    return sortProjectsWithStrategy(
+      selectedSortingMode.value,
+      result,
     );
   });
 
-  const tagFrequencyMap=computed(()=>{
-    const frequencyMap:Record<string,number>={};
-
-    projects.value?.forEach(project=>{
-      project.tags?.forEach((tag:string)=>{
-        frequencyMap[tag]=(frequencyMap[tag]||0)+1;
-      });
-    });
-
-    return frequencyMap;
-  });
-
-  const tags=computed(()=>Object.keys(tagFrequencyMap.value));
+  const matchesFound=computed<number>(()=>filteredProjects.value.length);
 
   function reset(){
     searchQuery.value='';
-    selectedTags.value=[];
   }
 
   return{
     fetch,
     searchQuery,
-    selectedTags,
     selectedViewMode,
+    selectedSortingMode,
     filteredProjects,
-    tags,
-    tagFrequencyMap,
+    matchesFound,
     reset,
   };
 }

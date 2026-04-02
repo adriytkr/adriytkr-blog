@@ -1,8 +1,8 @@
-import type { Recommendation } from '~/types/content';
-import type { RecommendationStatusFilter } from '~/types/recommendations';
+import type { RecommendationSchema } from '~/types/content';
+import type { RecommendationStatusFilter } from '~/types/recommendation';
 
 export function isRecommendationElegible(
-  recommendation:Recommendation,
+  recommendation:RecommendationSchema,
   query:string,
   categories:string[],
   status:RecommendationStatusFilter,

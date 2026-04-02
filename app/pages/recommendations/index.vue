@@ -64,4 +64,5 @@ fetch();
     :recommendations="filteredRecommendations"
     :view-mode="selectedViewMode"
   />
+  <FilterPagination/>
 </template>

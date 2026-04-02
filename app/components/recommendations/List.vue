@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Recommendation } from '~/types/content';
-import { PLACEHOLDER_IMAGE_PATH } from '~/constants/projects';
-import type { ViewMode } from '~/types/recommendations';
+import { PLACEHOLDER_IMAGE_PATH } from '~/constants/config';
+import type { ViewMode } from '~/types/recommendation';
 
 defineProps<{
   viewMode:ViewMode;

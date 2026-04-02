@@ -7,7 +7,7 @@ const {t,locale}=useI18n();
 
 const {data:recommendation,status}=await useAsyncData(
   `project-${locale.value}`,
-  async()=>await RecommentationService.getBySlug(locale.value,normalizeSlug(route.params.slug)),
+  async()=>await RecommentationService.getRecommendationBySlug(locale.value,normalizeSlug(route.params.slug)),
   {watch:[locale]},
 );
 

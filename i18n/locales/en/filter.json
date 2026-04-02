@@ -1,6 +1,8 @@
 {
   "filter":{
     "grid":"Grid",
-    "list":"List"
+    "list":"List",
+    "sorted":"A-Z",
+    "unsorted":"Z-A"
   }
 }

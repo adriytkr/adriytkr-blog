@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import type { ViewMode } from '~/types/recommendations';
+import type { ViewMode } from '~/types/filter';
 
-const selectedViewMode=defineModel<ViewMode>({default:'grid'});
+const selectedViewMode=defineModel<ViewMode>({
+  default:'grid',
+});
 </script>
 
 <template>
-  <div class="flex items-center gap-x-4 my-4">
+  <div class="flex items-center gap-x-4">
     <FilterViewModeButton
       :label="$t('filter.grid')"
       :is-selected="selectedViewMode==='grid'"

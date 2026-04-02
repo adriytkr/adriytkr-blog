@@ -13,7 +13,7 @@ defineEmits<{
   <div class="flex flex-1 flex-col items-center justify-center">
     <p class="mb-2">{{message}}</p>
     <button
-      class="text-primary hover:underline cursor-pointer"
+      class="text-primary hover:underline"
       @click="$emit('reset')"
     >
       {{ actionLabel }}

@@ -1,25 +1,39 @@
 @import "tailwindcss";
 
 @theme{
-  --color-bg:rgb(255 255 255);
-  --color-text:rgb(0 0 0);
-  --color-primary:rgb(255 0 0);
+  --color-primary:var(--color-blue-600);
+
+  --color-surface:var(--color-white);
+  --color-surface-border:var(--color-gray-700);
+
+  --color-body:var(--color-gray-700);
+  --color-muted:var(--color-slate-500);
 }
 
 @layer base {
   html[data-theme="dark"]{
-    --color-bg:rgb(26 26 26);
-    --color-text:rgb(255 255 255);
-    --color-primary:rgb(255 0 0);
     color-scheme: dark;
+
+    --color-primary:var(--color-blue-400);
+
+    --color-surface:var(--color-gray-900);
+    --color-surface-border:var(--color-slate-500);
+
+    --color-body: var(--color-gray-300);
+    --color-muted: var(--color-slate-400);
   }
 
   body{
-    @apply bg-bg text-text
+    @apply bg-surface;
   }
 
+  body,
   button,
   input{
-    @apply text-text;
+    @apply text-body;
+  }
+
+  button{
+    @apply cursor-pointer;
   }
 }
