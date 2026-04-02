@@ -5,6 +5,7 @@ description: A more robust alternative to VisuAlg and Portugol, this programming
 tags:
   - portuguese
   - education
+  - compilers
 ---
 
 Programming Language is a project...

@@ -15,7 +15,7 @@ function selectSortingMode(mode:SortingMode){
 
 <template>
   <div class="flex items-center gap-x-2">
-    Sort by
+    {{ $t('filter.sorting') }}
     <div class=relative>
       <button
         @click="isOpen=!isOpen"

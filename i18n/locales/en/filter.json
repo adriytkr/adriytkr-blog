@@ -2,6 +2,7 @@
   "filter":{
     "grid":"Grid",
     "list":"List",
+    "sorting":"Sort by",
     "sorted":"A-Z",
     "unsorted":"Z-A"
   }
