@@ -14,8 +14,8 @@ const navLinks:NavLink[]=[
 </script>
 
 <template>
-  <header class="header p-4">
-    <nav class="w-full max-w-5xl mx-auto flex justify-between items-center">
+  <header class="header sticky top-0 z-50">
+    <nav class="w-full p-2 m-2 rounded-sm bg-black/40 backdrop-blur-sm max-w-5xl mx-auto flex justify-between items-center">
       <ul class="flex items-center gap-4">
         <li
           v-for="navLink in navLinks"

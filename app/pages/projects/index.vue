@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ISearchAPI } from '~/types/filter';
 
-const {t,locale}=useI18n();
+const {t}=useI18n();
 
 const {
   fetch,
@@ -11,7 +11,7 @@ const {
   filteredProjects,
   matchesFound,
   reset,
-}=useProjectsFilter(locale.value);
+}=useProjectsFilter();
 
 const searchRef=ref<ISearchAPI|null>(null);
 const emptyStateMessage=computed<string>(

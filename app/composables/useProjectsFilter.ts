@@ -5,20 +5,24 @@ import {
   matchProject,
   sortProjectsWithStrategy,
 } from '~/utils/project';
-import type { CustomLocale } from '~~/i18n/config/types';
 
-export function useProjectsFilter(locale:CustomLocale){
+export function useProjectsFilter(){
   const searchQuery=ref<string>('');
   const selectedViewMode=ref<ViewMode>('grid');
 
   const projects=ref<ProjectSchema[]>([]);
+  const {t,locale}=useI18n();
 
   async function fetch(){
-    const result=await queryCollection('projects')
-      .where('path','LIKE',`/docs/projects/${locale}/%`)
-      .all() as ProjectSchema[];
+    const {data}=await useAsyncData(
+      `projects-${locale}`,
+      async()=>await queryCollection('projects')
+        .where('path','LIKE',`/docs/projects/${locale.value}/%`)
+        .all(),
+      {watch:[locale]}
+    )
 
-    projects.value=result;
+    projects.value=data.value as ProjectSchema[];
   }
 
   const selectedSortingMode=ref<SortingMode>('sorted');
